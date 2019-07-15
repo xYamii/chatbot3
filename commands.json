@@ -1,0 +1,32 @@
+{
+  "botCommands": {
+    "!discord": "https://discord.gg/JWRZsMx",
+    "!pb": "Half-life WON Easy, scriptless: 28m 50s"
+  },
+  "ttsLangs": {
+    "dk": "da-DK",
+    "nl": "nl-NL",
+    "au": "en-AU",
+    "gb": "en-GB",
+    "us": "en-US",
+    "fi": "fi-FI",
+    "ca": "fr-CA",
+    "fr": "fr-FR",
+    "de": "de-DE",
+    "it": "it-IT",
+    "jp": "ja-JP",
+    "kr": "ko-KR",
+    "no": "nb-NO",
+    "pl": "pl-PL",
+    "pt": "pt-PT",
+    "ru": "ru-RU",
+    "sk": "sk-SK",
+    "sv": "sv-SE",
+    "tr": "tr-TR",
+    "uk": "uk-UA",
+    "es": "es-ES",
+    "af": "af-ZA",
+    "ar": "es-ar"
+  },
+  "ignoredPpl": []
+}

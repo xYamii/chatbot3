@@ -1,0 +1,26 @@
+{
+  "name": "chatbot",
+  "version": "4.0.0",
+  "description": "Chatbot for twitch",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron index.js",
+    "build": "electron-packager . Chatbot",
+    "package": "asar pack Chatbot-win32-x64/resources/app Chatbot-win32-x64/resources/app.asar"
+  },
+  "keywords": [
+    "chatbot"
+  ],
+  "author": "Yamowan",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^5.0.6",
+    "google-tts-api": "0.0.4",
+    "jquery": "^3.4.1",
+    "tmi.js": "^1.4.5"
+  },
+  "devDependencies": {
+    "asar": "^2.0.1",
+    "electron-packager": "^14.0.1"
+  }
+}
