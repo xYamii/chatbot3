@@ -209,18 +209,22 @@ client.on("chat", async (channel, userstate, message, self) => {
       let msg = args.toString();
       msg = msg.split(",").join(" ");
       if (msg.length < 200) {
-        if (ttsQueue.length < 1) {
-          if (ttsPlaying == false) {
-            sayTTS(ttsLangs[lang], msg);
-            ttsPlaying = true;
+        if (msg.length < 1) {
+          return;
+        } else {
+          if (ttsQueue.length < 1) {
+            if (ttsPlaying == false) {
+              sayTTS(ttsLangs[lang], msg);
+              ttsPlaying = true;
+            } else {
+              console.log("dodaje bo gra");
+              addToQueue(ttsLangs[lang], msg);
+            }
           } else {
-            console.log("dodaje bo gra");
+            let msg = args.toString();
+            msg = msg.split(",").join(" ");
             addToQueue(ttsLangs[lang], msg);
           }
-        } else {
-          let msg = args.toString();
-          msg = msg.split(",").join(" ");
-          addToQueue(ttsLangs[lang], msg);
         }
       } else {
         if (userstate["username"] == config.channelName) {
