@@ -37,3 +37,21 @@ $("#updateAll").click(() => {
     return false;
   });
 });
+// ^ ill replace this with this
+function updateData(newData) {
+  fs.readFile(__dirname + "/config.json", function(err, data) {
+    if (err) {
+      console.log(err);
+    }
+    let obj = JSON.parse(data);
+    for (let prop in obj) {
+      obj[prop] = newData[prop];
+    }
+
+    let json = JSON.stringify(obj, null, 2);
+    fs.writeFile(__dirname + "/config.json", json, added);
+    function added(err) {
+      console.log("added succesfuly");
+    }
+  });
+}
