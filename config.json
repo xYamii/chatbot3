@@ -1,11 +1,12 @@
 {
-  "configured": false,
-  "username": "",
-  "clientID": "",
-  "channelName": "",
-  "auth": "",
-  "reqauth": "none",
-  "welcomeMsg": "",
-  "audioVolume": "0.2",
-  "srVolume": ""
+  "credentials": {
+    "botUsername": "",
+    "channelName": "",
+    "auth": "",
+    "welcomeMsg": ""
+  },
+  "volumes": {
+    "audioVolume": "0.2",
+    "ttsVolume": "1"
+  }
 }

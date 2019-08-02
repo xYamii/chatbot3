@@ -36,27 +36,39 @@
             <button class="btn btn-success" id="status-on">on</button
             ><button class="btn btn-danger" id="status-off">off</button>
           </div>
-          Sound volume:
-          <input
-            type="number"
-            id="soundVolume"
-            placeholder="Insert song sound volume"
-            class="form-control"
-            min="0"
-            max="1"
-            step="0.01"
-          /><br />
-          <button id="updateVolume" class="btn btn-primary">
-            Update volumes
-          </button>
-          <button id="reloadSounds" class="btn btn-primary">
-            Reload sounds
-          </button>
+          <div id="console"></div>
           <br />
         </header>
       </section>
       <section class="section" id="sounds-section">
         <header class="section-header">
+            Sound volume:
+            <input
+              type="number"
+              id="soundVolume"
+              placeholder="Insert song sound volume"
+              class="form-control"
+              min="0"
+              max="1"
+              step="0.01"
+            /><br />
+            TTS volume:
+            <input
+              type="number"
+              id="ttsVolume"
+              placeholder="Insert tts volume"
+              class="form-control"
+              min="0"
+              max="1"
+              step="0.01"
+            /><br />
+            <button id="updateVolume" class="btn btn-primary">
+              Update volumes
+            </button>
+            <button id="reloadSounds" class="btn btn-primary">
+              Reload sounds
+            </button>
+          </br>
           <table id="soundtable">
             <tr>
               <th>ordinal</th>

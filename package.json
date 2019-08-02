@@ -14,9 +14,10 @@
   "author": "Yamowan",
   "license": "ISC",
   "dependencies": {
-    "electron": "^5.0.6",
+    "electron": "^5.0.8",
     "google-tts-api": "0.0.4",
     "jquery": "^3.4.1",
+    "path": "^0.12.7",
     "tmi.js": "^1.4.5"
   },
   "devDependencies": {

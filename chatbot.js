@@ -31,64 +31,48 @@ const settings = {
   ignoredtts: commandsFile.ignoredPpl,
   commands: commandsFile.botCommands
 };
-let soundPath = path.join(__dirname, "../");
-function loadSounds() {
-  fs.readdir(soundPath + "/sounds", function(err, items) {
-    if (items !== undefined) {
-      let soundArray = [];
-      for (var i = 0; i < items.length; i++) {
-        let z = items[i].slice(0, -4);
-        soundArray.push("!" + z);
-      }
-      settings.sounds = soundArray;
-      let sndBox = document.getElementById("soundtable");
-      sndBox.innerHTML = "";
-      for (let key in soundArray) {
-        sndBox.innerHTML += ` <tr><td>${parseInt(key) + 1}</td><td>${
-          soundArray[key]
-        }</td></tr>`;
-      }
+
+let ttsLangs = commandsFile.ttsLangs;
+let ttsPlaying = false;
+let tts = (function() {
+  let ttsQueue = [];
+
+  function addToQueue(lang, msg) {
+    ttsQueue.push([lang, msg]);
+  }
+  function sayTTS(lang, msg) {
+    googleTTS(msg, lang, 1)
+      .then(function(url) {
+        console.log(url);
+        $("#audio1")
+          .attr("src", url)
+          .get(0)
+          .play();
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+  }
+
+  $("#audio1").on("ended", function() {
+    ttsPlaying = false;
+    if (ttsQueue.length < 1) {
+      return;
     } else {
-      document.getElementById("soundtable").innerHTML =
-        "there are no sounds added to bot xd";
+      ttsPlaying = true;
+      let elTTS = ttsQueue.shift();
+      let lang = elTTS[0];
+      let msg = elTTS[1];
+      sayTTS(lang, msg);
     }
   });
-}
-let ttsLangs = commandsFile.ttsLangs;
-let ttsQueue = [];
-let ttsPlaying = false;
-function addToQueue(lang, msg) {
-  ttsQueue.push([lang, msg]);
-}
-
-function sayTTS(lang, msg) {
-  googleTTS(msg, lang, 1)
-    .then(function(url) {
-      console.log(url);
-      $("#audio1")
-        .attr("src", url)
-        .get(0)
-        .play();
-    })
-    .catch(function(err) {
-      console.log(err);
-    });
-}
-$("#audio1").on("ended", function() {
-  ttsPlaying = false;
-  if (ttsQueue.length < 1) {
-    return;
-  } else {
-    ttsPlaying = true;
-    let elTTS = ttsQueue.shift();
-    let lang = elTTS[0];
-    let msg = elTTS[1];
-    sayTTS(lang, msg);
-  }
-});
+  return {
+    sayTTS: sayTTS,
+    addToQueue: addToQueue
+  };
+})();
 
 let botStatus = document.getElementById("bot-status");
-
 function init() {
   let s = document.getElementsByClassName("alert-disabled");
   document.getElementById("soundVolume").value = config.audioVolume;
@@ -214,16 +198,16 @@ client.on("chat", async (channel, userstate, message, self) => {
         } else {
           if (ttsQueue.length < 1) {
             if (ttsPlaying == false) {
-              sayTTS(ttsLangs[lang], msg);
+              tts.sayTTS(ttsLangs[lang], msg);
               ttsPlaying = true;
             } else {
               console.log("dodaje bo gra");
-              addToQueue(ttsLangs[lang], msg);
+              tts.addToQueue(ttsLangs[lang], msg);
             }
           } else {
             let msg = args.toString();
             msg = msg.split(",").join(" ");
-            addToQueue(ttsLangs[lang], msg);
+            tts.addToQueue(ttsLangs[lang], msg);
           }
         }
       } else {
