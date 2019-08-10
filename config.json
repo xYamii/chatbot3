@@ -1,12 +1,12 @@
 {
   "credentials": {
-    "botUsername": "",
-    "channelName": "",
-    "auth": "",
-    "welcomeMsg": ""
+    "botUsername": "bot_xdonut",
+    "channelName": "yamii",
+    "botOauth": "oauth:h8etolw88fckw5vq96k1w21rejtjp8",
+    "newMsg": "xd"
   },
   "volumes": {
-    "audioVolume": "0.2",
+    "audioVolume": "1",
     "ttsVolume": "1"
   }
 }

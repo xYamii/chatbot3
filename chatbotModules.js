@@ -6,7 +6,7 @@ let soundPath = path.join(__dirname, "../");
 module.exports = {
   playSound: (s, audioVolume) => {
     var audio = new Audio(soundPath + `/sounds/${s}.wav`);
-    audio.volume = audioVolume;
+    audio.volume = parseInt(audioVolume);
     audio.play();
     delete audio;
   },
