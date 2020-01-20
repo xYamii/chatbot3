@@ -1,8 +1,5 @@
 {
-  "botCommands": {
-    "!discord": "https://discord.gg/JWRZsMx",
-    "!pb": "Half-life WON Easy, scriptless: 28m 50s"
-  },
+  "botCommands": {},
   "ttsLangs": {
     "dk": "da-DK",
     "nl": "nl-NL",
@@ -28,5 +25,5 @@
     "af": "af-ZA",
     "ar": "es-ar"
   },
-  "ignoredPpl": []
+  "ignoredPpl": ["ka", "ww", "sdd"]
 }

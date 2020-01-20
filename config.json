@@ -1,11 +1,12 @@
 {
-  "configured": false,
-  "username": "",
-  "clientID": "",
-  "channelName": "",
-  "auth": "",
-  "reqauth": "none",
-  "welcomeMsg": "",
-  "audioVolume": "0.2",
-  "srVolume": ""
+  "credentials": {
+    "botUsername": "bot_xdonut",
+    "channelName": "yamii",
+    "botOauth": "oauth:h8etolw88fckw5vq96k1w21rejtjp8",
+    "newMsg": "xd"
+  },
+  "volumes": {
+    "audioVolume": "0.4",
+    "ttsVolume": "0.98"
+  }
 }

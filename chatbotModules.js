@@ -2,10 +2,11 @@ const fs = require("fs");
 const tmi = require("tmi.js");
 const path = require("path");
 
-let soundPath = path.join(__dirname, "../");
+let soundPath = path.join(__dirname, "/");
 module.exports = {
   playSound: (s, audioVolume) => {
-    var audio = new Audio(soundPath + `/sounds/${s}.wav`);
+    console.log(parseInt(audioVolume));
+    var audio = new Audio(soundPath + `sounds/${s}.mp3`);
     audio.volume = audioVolume;
     audio.play();
     delete audio;

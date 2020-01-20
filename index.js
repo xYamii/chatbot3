@@ -3,13 +3,13 @@ const { app, BrowserWindow } = electron;
 
 app.on("ready", () => {
   let win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 576,
     webPreferences: {
       nodeIntegration: true
     }
   });
-  win.loadURL(`file://${__dirname}/index_2.html`);
+  win.loadURL(`file://${__dirname}/index.html`);
 });
 app.on("window-all-closed", app.quit);
 app.on("before-quit", () => {
