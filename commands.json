@@ -25,5 +25,6 @@
     "af": "af-ZA",
     "ar": "es-ar"
   },
-  "ignoredPpl": ["ka", "ww", "sdd"]
+  "ignoredPpl": ["ka", "ww", "sdd"],
+  "bannedPhrases": ["penis"]
 }

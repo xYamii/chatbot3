@@ -30,19 +30,20 @@ let settings = {
   ttsVolume: config.volumes.ttsVolume,
   status: true,
   ignoredtts: commandsFile.ignoredPpl,
-  commands: commandsFile.botCommands
+  commands: commandsFile.botCommands,
+  bannedPhrases: commandsFile.bannedPhrases
 };
 
 let ttsLangs = commandsFile.ttsLangs;
 let ttsPlaying = false;
+let ttsSubOnly = false;
+let ttsIncludeVips = false;
+let sfxSubOnly = false;
+let sfxIncludeVips = false;
 
 const chatbot = (function() {
   //variables
   let soundPath = path.join(__dirname, "/");
-  let ttsSubOnly = false;
-  let ttsIncludeVips = false;
-  let sfxSubOnly = false;
-  let sfxIncludeVips = false;
   //cache dom
   let $soundTable = $("#soundtable");
   let $botStatus = $("#bot-status");
@@ -166,12 +167,13 @@ const chatbot = (function() {
       botOauth: $("#botOauth").val(),
       newMsg: $("#newMsg").val()
     };
+
     if (botUsername == "" || channelName == "" || botOauth == "") {
       logToConsole("error", "You need to fill all data");
     } else {
       options.identity.username = newData.botUsername;
       options.identity.password = newData.botOauth;
-      options.channels = newData.channelName;
+      options.channels[0] = newData.channelName;
       fs.readFile(__dirname + "/config.json", function(err, data) {
         if (err) {
           logToConsole("error", err);
@@ -180,7 +182,6 @@ const chatbot = (function() {
         for (let prop in obj.credentials) {
           obj["credentials"][prop] = newData[prop];
         }
-
         let json = JSON.stringify(obj, null, 2);
         fs.writeFile(__dirname + "/config.json", json, added);
         function added(err) {
@@ -255,10 +256,71 @@ const chatbot = (function() {
   _loadSounds();
   displayIgnored();
 })();
-
+function canFireTTS(userData) {
+  let userBadge = {
+    vip: false,
+    sub: false
+  };
+  if (!userData.badges == "") {
+    if (userData.badges.vip == 1) {
+      userBadge.vip = true;
+    } else if (userData.subscriber || userData.mod) {
+      userBadge.sub = true;
+    }
+  }
+  if (ttsSubOnly) {
+    if (ttsIncludeVips) {
+      if (userBadge.vip || userBadge.sub) {
+        return true;
+      }
+    } else {
+      if (userBadge.sub) {
+        return true;
+      } else return false;
+    }
+  } else {
+    return true;
+  }
+}
+function canFireSfx(userData) {
+  let userBadge = {
+    vip: false,
+    sub: false
+  };
+  if (!userData.badges == "") {
+    if (userData.badges.vip == 1) {
+      userBadge.vip = true;
+    } else if (userData.subscriber || userData.mod) {
+      userBadge.sub = true;
+    }
+  }
+  if (sfxSubOnly) {
+    if (sfxIncludeVips) {
+      if (userBadge.vip || userBadge.sub) {
+        return true;
+      }
+    } else {
+      if (userBadge.sub) {
+        return true;
+      } else return false;
+    }
+  } else {
+    return true;
+  }
+}
 let tts = (function() {
   let ttsQueue = [];
-
+  function filterTTS(msg) {
+    if (msg.length < 200 && msg.length > 1) {
+      if (settings.bannedPhrases.some(v => msg.includes(v))) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
   function addToQueue(lang, msg) {
     ttsQueue.push([lang, msg]);
   }
@@ -266,6 +328,7 @@ let tts = (function() {
     googleTTS(msg, lang, 1)
       .then(function(url) {
         $("#audio1")
+          .prop("volume", settings.ttsVolume)
           .attr("src", url)
           .get(0)
           .play();
@@ -279,6 +342,8 @@ let tts = (function() {
   function movettsQueue() {
     ttsPlaying = false;
     if (ttsQueue.length < 1) {
+      let audio = $("#audio1")[0];
+      audio.pause();
       return;
     } else {
       ttsPlaying = true;
@@ -292,7 +357,8 @@ let tts = (function() {
     sayTTS: sayTTS,
     addToQueue: addToQueue,
     movettsQueue: movettsQueue,
-    ttsQueue: ttsQueue
+    ttsQueue: ttsQueue,
+    filterTTS: filterTTS
   };
 })();
 
@@ -313,9 +379,8 @@ function isHeVip(userData) {
 }
 client.on("chat", (channel, userstate, message, self) => {
   if (self) return;
-  let mess = message.toLowerCase();
-  let messageArray = mess.split(" ");
-  let cmd = messageArray[0];
+  let messageArray = message.split(" ");
+  let cmd = messageArray[0].toLowerCase();
   let lang;
   if (cmd[0] == "!") {
     lang = cmd.substr(1);
@@ -323,9 +388,14 @@ client.on("chat", (channel, userstate, message, self) => {
   // console.log(userstate.badges.hasOwnProperty("vip"));
   //sounds fire
   let args = messageArray.slice(1);
-  soundname = cmd.substr(1);
+  if (settings.sounds.includes(cmd)) {
+    if (canFireSfx(userstate)) {
+      soundname = cmd.substr(1);
+      functions.playSound(soundname, settings.audioVolume);
+    }
+  }
   if (cmd == "!d") {
-    console.log(isHeVip(userstate));
+    console.log(userstate);
   }
   if (cmd == "!langs") {
     let languages = Object.keys(ttsLangs);
@@ -344,7 +414,7 @@ client.on("chat", (channel, userstate, message, self) => {
         args == config.credentials.channelName ||
         settings.ignoredtts.includes(args[0])
       ) {
-        console.log("already in array / its stremer");
+        logToConsole("error", "already in array / its stremer");
       } else {
         settings.ignoredtts.push(args[0]);
         functions.ignoreN(args[0]);
@@ -394,15 +464,11 @@ client.on("chat", (channel, userstate, message, self) => {
   }
   //tts
   if (ttsLangs[lang] !== undefined) {
-    if (settings.ignoredtts.includes(userstate["username"])) {
-      return;
-    } else {
-      let msg = args.toString();
-      msg = msg.split(",").join(" ");
-      if (msg.length < 200) {
-        if (msg.length < 1) {
-          return;
-        } else {
+    if (canFireTTS(userstate)) {
+      if (!settings.ignoredtts.includes(userstate["username"])) {
+        let msg = args.toString();
+        msg = msg.split(",").join(" ");
+        if (tts.filterTTS(msg)) {
           if (tts.ttsQueue.length < 1) {
             if (ttsPlaying == false) {
               tts.sayTTS(ttsLangs[lang], msg);
@@ -411,18 +477,10 @@ client.on("chat", (channel, userstate, message, self) => {
               tts.addToQueue(ttsLangs[lang], msg);
             }
           } else {
-            let msg = args.toString();
-            msg = msg.split(",").join(" ");
             tts.addToQueue(ttsLangs[lang], msg);
           }
-        }
-      } else {
-        if (userstate["username"] == config.credentials.channelName) {
-        } else {
-          settings.ignoredtts.push(userstate["username"]);
-          functions.ignoreN(userstate["username"]);
-        }
-      }
+        } else return;
+      } else return;
     }
   }
 });

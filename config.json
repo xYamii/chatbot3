@@ -3,10 +3,10 @@
     "botUsername": "bot_xdonut",
     "channelName": "yamii",
     "botOauth": "oauth:h8etolw88fckw5vq96k1w21rejtjp8",
-    "newMsg": "xd"
+    "newMsg": ""
   },
   "volumes": {
-    "audioVolume": "0.4",
-    "ttsVolume": "0.98"
+    "audioVolume": "1",
+    "ttsVolume": "0.8"
   }
 }
