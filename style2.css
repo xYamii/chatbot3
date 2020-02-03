@@ -54,3 +54,15 @@ input[type="number"] {
 ul {
   list-style-type: none;
 }
+.left {
+  float: left;
+  margin-right: 20px;
+}
+#bannedPhrase {
+  clear: both;
+  margin-top: 100px;
+}
+#phraseList {
+  overflow-y: auto;
+  height: 250px;
+}

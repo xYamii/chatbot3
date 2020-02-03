@@ -46,7 +46,7 @@
               </div>
         </div>
         <div class="sections">
-            <div class="section active" id="main-section">
+            <div class="section " id="main-section">
                 <div class="section-content">
                     <div id="status">
                         <p>Status: <span id="bot-status"></span></p>
@@ -86,13 +86,15 @@
                     </div> -->
                 </div>
             </div>
-            <div class="section" id="tts-section">
-                <div class="section-content">
+            <div class="section active" id="tts-section">
+                <div class="left">
                     Sub only tts: <input type="checkbox" name="" id="ttsSubOnly"> <br>
                     Include twitch vips: <input type="checkbox" name="" id="ttsIncludeVips" disabled>
                     
-                    </div> <br>TTS volume (0-1 range):
-                    <input
+                  </div> 
+                  <div class="left">
+                  TTS volume (0-1 range):
+                      <input
                     type="number"
                     id="ttsVolume"
                     placeholder="Insert tts volume"
@@ -102,11 +104,16 @@
                     step="0.01"
                     /> </br>
                     <button id="updateTTSVol" class="btn btn-primary">
-                        Update tts volume
-                      </button>
-                      <br>
-                      <div>
-                        
+                      Update tts volume
+                    </button>
+                  </div><br><br>
+                  <div id="bannedPhrase">
+                    <input type="text" id="phraseVal" class="form-control">
+                    <button class="btn btn-primary">Add phrase</button>
+                     
+                        <ul id="phraseList">
+                          No phrases yet :)
+                        </ul>
                       </div>
                 </div>
            
