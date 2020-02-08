@@ -31,7 +31,8 @@ let settings = {
   status: true,
   ignoredtts: commandsFile.ignoredPpl,
   commands: commandsFile.botCommands,
-  bannedPhrases: commandsFile.bannedPhrases
+  bannedPhrases: commandsFile.bannedPhrases,
+  nigas: ["qdth","godlikehobbit","moobot","nightbot","eddwardg"]
 };
 
 let ttsLangs = commandsFile.ttsLangs;
@@ -378,7 +379,7 @@ function isHeVip(userData) {
   }
 }
 client.on("chat", (channel, userstate, message, self) => {
-  if (self) return;
+  if (self || settings.nigas.includes(userstate["username"])) return;
   let messageArray = message.split(" ");
   let cmd = messageArray[0].toLowerCase();
   let lang;
@@ -436,7 +437,12 @@ client.on("chat", (channel, userstate, message, self) => {
   if (cmd == "!sounds") {
     let soundList = " ";
     for (var i = 0; i < settings.sounds.length; i++) {
-      soundList = soundList + " " + settings.sounds[i];
+      if(soundList.length > 400){
+        client.say(config.credentials.channelName, soundList);
+        soundList = " ";
+      }else{
+        soundList = soundList + " " + settings.sounds[i];
+      }
     }
     client.say(config.credentials.channelName, soundList);
   }
