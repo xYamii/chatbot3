@@ -25,6 +25,14 @@
     "af": "af-ZA",
     "ar": "es-ar"
   },
-  "ignoredPpl": ["ka", "ww", "sdd"],
-  "bannedPhrases": ["penis"]
+  "ignoredPpl": [
+    "yamii",
+    "proto",
+    "dogo"
+  ],
+  "bannedPhrases": [
+    "ww",
+    "dd",
+    "xx"
+  ]
 }

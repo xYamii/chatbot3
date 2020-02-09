@@ -65,4 +65,5 @@ ul {
 #phraseList {
   overflow-y: auto;
   height: 250px;
+  padding: 2px;
 }
