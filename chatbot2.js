@@ -32,7 +32,7 @@ let settings = {
   ignoredtts: commandsFile.ignoredPpl,
   commands: commandsFile.botCommands,
   bannedPhrases: commandsFile.bannedPhrases,
-  nigas: ["qdth","godlikehobbit","moobot","nightbot","eddwardg"]
+  nigas: ["qdth", "godlikehobbit", "moobot", "nightbot", "eddwardg"]
 };
 
 let ttsLangs = commandsFile.ttsLangs;
@@ -66,6 +66,7 @@ const chatbot = (function() {
   let $updateSoundVolume = $("#updateSoundVol");
   let $updateTTSVolume = $("#updateTTSVol");
   let $addPhraseBtn = $("#addPhrase");
+  let $addGuyBtn = $("#addGuy");
   //bind events
   let btns = document.getElementsByClassName("btn-link");
   Array.from(btns).forEach(item => {
@@ -119,6 +120,7 @@ const chatbot = (function() {
   $statusON.click(_startBot);
   $statusOFF.click(_stopBot);
   $addPhraseBtn.click(addPhrase);
+  $addGuyBtn.click(addGuy);
   //functions
   function _init() {
     for (let key in credentials) {
@@ -223,10 +225,14 @@ const chatbot = (function() {
       }
     });
   }
-  function addPhrase(e){
-    let phrase = $(e.target).prev("input").val();
-    $(e.target).prev("input").val("");
-    if(!settings.bannedPhrases.includes(phrase)){
+  function addPhrase(e) {
+    let phrase = $(e.target)
+      .prev("input")
+      .val();
+    $(e.target)
+      .prev("input")
+      .val("");
+    if (!settings.bannedPhrases.includes(phrase)) {
       settings.bannedPhrases.push(phrase);
       fs.readFile(__dirname + "/commands.json", (err, data) => {
         if (err) logToConsole("error", err);
@@ -240,15 +246,36 @@ const chatbot = (function() {
         }
       });
       displayPhrases();
-    }
-    else return; 
-  };
+    } else return;
+  }
+  function addGuy(e) {
+    let guy = $(e.target)
+      .prev("input")
+      .val();
+    $(e.target)
+      .prev("input")
+      .val("");
+    if (!settings.ignoredtts.includes(guy)) {
+      settings.ignoredtts.push(guy);
+      fs.readFile(__dirname + "/commands.json", (err, data) => {
+        if (err) logToConsole("error", err);
+        let obj = JSON.parse(data);
+        obj["ignoredPpl"].push(guy);
+        let json = JSON.stringify(obj, null, 2);
+        fs.writeFile(__dirname + "/commands.json", json, added);
+        function added(err) {
+          if (err) logToConsole("error", err);
+          logToConsole("info", "Guy added: " + guy);
+        }
+      });
+      displayIgnored();
+    } else return;
+  }
+
   function displayIgnored() {
     let ignoredData = "";
     for (let key in settings.ignoredtts) {
-      ignoredData += `<li> - ${
-        settings.ignoredtts[key]
-      } <i class="del">X</i> </li>`;
+      ignoredData += `<li> - ${settings.ignoredtts[key]} <i class="del">X</i> </li>`;
     }
     $ignoredList.html(ignoredData);
     bindDeleteGuy();
@@ -256,14 +283,12 @@ const chatbot = (function() {
   function displayPhrases() {
     let phrasesData = "";
     for (let key in settings.bannedPhrases) {
-      phrasesData += `<li> - ${
-        settings.bannedPhrases[key]
-      } <i class="del1">X</i> </li>`;
+      phrasesData += `<li> - ${settings.bannedPhrases[key]} <i class="del1">X</i> </li>`;
     }
     $phraseList.html(phrasesData);
     bindDeletePhrases();
   }
-  
+
   function bindDeletePhrases() {
     let ppl = document.getElementsByClassName("del1");
     Array.from(ppl).forEach(item => {
@@ -274,7 +299,7 @@ const chatbot = (function() {
           .index($remove);
         $remove.remove();
         settings.bannedPhrases.splice(phraseToRemove, 1);
-        remFromFile("bannedPhrases",phraseToRemove);
+        remFromFile("bannedPhrases", phraseToRemove);
       });
     });
   }
@@ -286,25 +311,24 @@ const chatbot = (function() {
         let guyToRemove = $("#ignoredList")
           .find("li")
           .index($remove);
-          console.log(guyToRemove)
         $remove.remove();
         settings.ignoredtts.splice(guyToRemove, 1);
-        remFromFile("ignoredPpl",guyToRemove);
+        remFromFile("ignoredPpl", guyToRemove);
       });
     });
   }
- function remFromFile(listType,index){
-  fs.readFile(__dirname + "/commands.json", (err, data) => {
-    if (err) console.log(err);
-    let obj = JSON.parse(data);
-    obj[listType].splice(index, 1);
-    let json = JSON.stringify(obj, null, 2);
-    fs.writeFile(__dirname + "/commands.json", json, added);
-    function added(err) {
+  function remFromFile(listType, index) {
+    fs.readFile(__dirname + "/commands.json", (err, data) => {
       if (err) console.log(err);
-      console.log("updated succesfuly");
-    }
-  });
+      let obj = JSON.parse(data);
+      obj[listType].splice(index, 1);
+      let json = JSON.stringify(obj, null, 2);
+      fs.writeFile(__dirname + "/commands.json", json, added);
+      function added(err) {
+        if (err) console.log(err);
+        logToConsole("info", "removed xd");
+      }
+    });
   }
   function logToConsole(msgType, logMsg) {
     $console.append(`<p class="${msgType}">${logMsg}<p>`);
@@ -313,6 +337,9 @@ const chatbot = (function() {
   _loadSounds();
   displayIgnored();
   displayPhrases();
+  return {
+    displayIgnored: displayIgnored
+  };
 })();
 function canFireTTS(userData) {
   let userBadge = {
@@ -428,13 +455,6 @@ client.on("connected", function(address, port) {
   }
 });
 
-function isHeVip(userData) {
-  if (userData.badges == null) {
-    return false;
-  } else {
-    if (userData.badges.vip == 1) return true;
-  }
-}
 client.on("chat", (channel, userstate, message, self) => {
   if (self || settings.nigas.includes(userstate["username"])) return;
   let messageArray = message.split(" ");
@@ -476,6 +496,7 @@ client.on("chat", (channel, userstate, message, self) => {
       } else {
         settings.ignoredtts.push(args[0]);
         functions.ignoreN(args[0]);
+        chatbot.displayIgnored();
       }
     }
   }
@@ -488,16 +509,17 @@ client.on("chat", (channel, userstate, message, self) => {
         let index = settings.ignoredtts.indexOf(args[0]);
         settings.ignoredtts.splice(index, 1);
         functions.unignore(args[0]);
+        chatbot.displayIgnored();
       }
     }
   }
   if (cmd == "!sounds") {
     let soundList = " ";
     for (var i = 0; i < settings.sounds.length; i++) {
-      if(soundList.length > 400){
+      if (soundList.length > 400) {
         client.say(config.credentials.channelName, soundList);
         soundList = " ";
-      }else{
+      } else {
         soundList = soundList + " " + settings.sounds[i];
       }
     }

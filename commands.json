@@ -25,14 +25,6 @@
     "af": "af-ZA",
     "ar": "es-ar"
   },
-  "ignoredPpl": [
-    "yamii",
-    "proto",
-    "dogo"
-  ],
-  "bannedPhrases": [
-    "ww",
-    "dd",
-    "xx"
-  ]
+  "ignoredPpl": [],
+  "bannedPhrases": []
 }
