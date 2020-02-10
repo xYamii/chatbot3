@@ -67,3 +67,8 @@ ul {
   height: 250px;
   padding: 2px;
 }
+#soundtable {
+  overflow-y: auto;
+  height: 250px;
+  padding: 2px;
+}

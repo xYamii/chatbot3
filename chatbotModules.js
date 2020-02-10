@@ -5,7 +5,7 @@ const path = require("path");
 let soundPath = path.join(__dirname, "/");
 module.exports = {
   playSound: (s, audioVolume) => {
-    var audio = new Audio(soundPath + `sounds/${s}.mp3`);
+    var audio = new Audio(soundPath + `sounds/${s}.wav`);
     audio.volume = audioVolume;
     audio.play();
     delete audio;

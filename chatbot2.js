@@ -321,12 +321,13 @@ const chatbot = (function() {
     fs.readFile(__dirname + "/commands.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
+      let w = obj[listType][index];
       obj[listType].splice(index, 1);
       let json = JSON.stringify(obj, null, 2);
       fs.writeFile(__dirname + "/commands.json", json, added);
       function added(err) {
         if (err) console.log(err);
-        logToConsole("info", "removed xd");
+        logToConsole("info", "removed: " + w);
       }
     });
   }

@@ -6,7 +6,7 @@
     "newMsg": ""
   },
   "volumes": {
-    "audioVolume": "0.1",
+    "audioVolume": "0.8",
     "ttsVolume": "0.5"
   }
 }
