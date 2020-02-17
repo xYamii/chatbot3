@@ -1,8 +1,8 @@
 const fs = require("fs");
-const tmi = require("tmi.js");
 const path = require("path");
 
 let soundPath = path.join(__dirname, "/");
+
 module.exports = {
   playSound: (s, audioVolume) => {
     var audio = new Audio(soundPath + `sounds/${s}.wav`);

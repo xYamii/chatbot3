@@ -32,7 +32,7 @@ let settings = {
   ignoredtts: commandsFile.ignoredPpl,
   commands: commandsFile.botCommands,
   bannedPhrases: commandsFile.bannedPhrases,
-  nigas: ["qdth", "godlikehobbit", "moobot", "nightbot", "eddwardg"]
+  nigas: ["qdth", "moobot", "nightbot", "eddwardg"]
 };
 
 let ttsLangs = commandsFile.ttsLangs;
@@ -44,7 +44,7 @@ let sfxIncludeVips = false;
 
 const chatbot = (function() {
   //variables
-  let soundPath = path.join(__dirname, "/");
+  let soundPath = path.join(__dirname, "./");
   //cache dom
   let $soundTable = $("#soundtable");
   let $botStatus = $("#bot-status");
@@ -128,7 +128,6 @@ const chatbot = (function() {
     }
     $ttsVolume.val(settings.ttsVolume);
     $soundVolume.val(settings.audioVolume);
-    console.log(settings.ignoredtts);
   }
   function _startBot() {
     client.connect();
@@ -207,7 +206,7 @@ const chatbot = (function() {
       fs.writeFile(__dirname + "/config.json", json, added);
       function added(err) {
         if (err) logToConsole("error", err);
-        logToConsole("info", "Sound updated");
+        logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
       }
     });
   }
@@ -221,7 +220,7 @@ const chatbot = (function() {
       fs.writeFile(__dirname + "/config.json", json, added);
       function added(err) {
         if (err) logToConsole("error", err);
-        logToConsole("info", "Sound updated");
+        logToConsole("info", "TTS sound updated to: " + $ttsVolume.val());
       }
     });
   }
@@ -242,7 +241,7 @@ const chatbot = (function() {
         fs.writeFile(__dirname + "/commands.json", json, added);
         function added(err) {
           if (err) logToConsole("error", err);
-          logToConsole("info", "Sound updated");
+          logToConsole("info", "Added phrase");
         }
       });
       displayPhrases();
@@ -350,7 +349,7 @@ function canFireTTS(userData) {
   if (!userData.badges == "") {
     if (userData.badges.vip == 1) {
       userBadge.vip = true;
-    } else if (userData.subscriber || userData.mod) {
+    } else if (userData.subscriber) {
       userBadge.sub = true;
     }
   }
@@ -376,7 +375,7 @@ function canFireSfx(userData) {
   if (!userData.badges == "") {
     if (userData.badges.vip == 1) {
       userBadge.vip = true;
-    } else if (userData.subscriber || userData.mod) {
+    } else if (userData.subscriber) {
       userBadge.sub = true;
     }
   }
@@ -420,7 +419,7 @@ let tts = (function() {
           .play();
       })
       .catch(function(err) {
-        logToConsole("error", err);
+        console.log(err);
       });
   }
 
@@ -458,24 +457,44 @@ client.on("connected", function(address, port) {
 
 client.on("chat", (channel, userstate, message, self) => {
   if (self || settings.nigas.includes(userstate["username"])) return;
+  if (
+    userstate["msg-id"] !== undefined &&
+    userstate["msg-id"] == "highlighted-message"
+  ) {
+    let msg = message.toString();
+    msg = msg.split(",").join(" ");
+    console.log(msg);
+    if (tts.ttsQueue.length < 1) {
+      if (ttsPlaying == false) {
+        tts.sayTTS("fi-FI", msg);
+        ttsPlaying = true;
+      } else {
+        tts.addToQueue("fi-FI", msg);
+      }
+    } else {
+      tts.addToQueue("fi-FI", msg);
+    }
+  }
   let messageArray = message.split(" ");
   let cmd = messageArray[0].toLowerCase();
   let lang;
   if (cmd[0] == "!") {
     lang = cmd.substr(1);
   }
+  // if(userstate)
   // console.log(userstate.badges.hasOwnProperty("vip"));
   //sounds fire
   let args = messageArray.slice(1);
-  if (settings.sounds.includes(cmd)) {
-    if (canFireSfx(userstate)) {
-      soundname = cmd.substr(1);
-      functions.playSound(soundname, settings.audioVolume);
-    }
-  }
-  if (cmd == "!d") {
-    console.log(userstate);
-  }
+  // if (settings.sounds.includes(cmd)) {
+  //   if (canFireSfx(userstate)) {
+  //     soundname = cmd.substr(1);
+  //     functions.playSound(soundname, settings.audioVolume);
+  //   }
+  // }
+
+  //no msg-id when normal msg
+  //msg-id: "highlighted-message"
+  //msg-id: "skip-subs-mode-message"
   if (cmd == "!langs") {
     let languages = Object.keys(ttsLangs);
     let langlist = "";

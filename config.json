@@ -7,6 +7,6 @@
   },
   "volumes": {
     "audioVolume": "0.8",
-    "ttsVolume": "0.5"
+    "ttsVolume": "1"
   }
 }
