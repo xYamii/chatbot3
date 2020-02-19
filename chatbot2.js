@@ -495,77 +495,79 @@ client.on("chat", (channel, userstate, message, self) => {
   //no msg-id when normal msg
   //msg-id: "highlighted-message"
   //msg-id: "skip-subs-mode-message"
-  if (cmd == "!langs") {
-    let languages = Object.keys(ttsLangs);
-    let langlist = "";
-    for (var i = 0; i < languages.length; i++) {
-      langlist = langlist + " " + languages[i];
-    }
-    client.say(config.credentials.channelName, langlist);
-  }
-  if (cmd == "!ignore") {
-    if (
-      userstate["mod"] ||
-      userstate["username"] == config.credentials.channelName
-    ) {
+  switch(cmd) {
+    case "!langs":
+      let languages = Object.keys(ttsLangs);
+      let langlist = "";
+      for (var i = 0; i < languages.length; i++) {
+        langlist = langlist + " " + languages[i];
+      }
+      client.say(config.credentials.channelName, langlist);
+      break;
+    case "!ignore":
       if (
-        args == config.credentials.channelName ||
-        settings.ignoredtts.includes(args[0])
+        userstate["mod"] ||
+        userstate["username"] == config.credentials.channelName
       ) {
-        logToConsole("error", "already in array / its stremer");
-      } else {
-        settings.ignoredtts.push(args[0]);
-        functions.ignoreN(args[0]);
-        chatbot.displayIgnored();
+        if (
+          args == config.credentials.channelName ||
+          settings.ignoredtts.includes(args[0])
+        ) {
+          logToConsole("error", "already in array / its stremer");
+        } else {
+          settings.ignoredtts.push(args[0]);
+          functions.ignoreN(args[0]);
+          chatbot.displayIgnored();
+        }
       }
-    }
-  }
-  if (cmd == "!unignore") {
-    if (
-      userstate["mod"] ||
-      userstate["username"] == config.credentials.channelName
-    ) {
-      if (settings.ignoredtts.includes(args[0])) {
-        let index = settings.ignoredtts.indexOf(args[0]);
-        settings.ignoredtts.splice(index, 1);
-        functions.unignore(args[0]);
-        chatbot.displayIgnored();
+      break;
+    case "!unignore":
+      if (
+        userstate["mod"] ||
+        userstate["username"] == config.credentials.channelName
+      ) {
+        if (settings.ignoredtts.includes(args[0])) {
+          let index = settings.ignoredtts.indexOf(args[0]);
+          settings.ignoredtts.splice(index, 1);
+          functions.unignore(args[0]);
+          chatbot.displayIgnored();
+        }
       }
-    }
-  }
-  if (cmd == "!sounds") {
-    let soundList = " ";
-    for (var i = 0; i < settings.sounds.length; i++) {
-      if (soundList.length > 400) {
-        client.say(config.credentials.channelName, soundList);
-        soundList = " ";
-      } else {
-        soundList = soundList + " " + settings.sounds[i];
+      break;
+    case "!sounds":
+      let soundList = " ";
+      for (var i = 0; i < settings.sounds.length; i++) {
+        if (soundList.length > 400) {
+          client.say(config.credentials.channelName, soundList);
+          soundList = " ";
+        } else {
+          soundList = soundList + " " + settings.sounds[i];
+        }
       }
-    }
-    client.say(config.credentials.channelName, soundList);
+      client.say(config.credentials.channelName, soundList);
+      break;
+    case "!addlang":
+      if (
+        userstate["mod"] ||
+        userstate["username"] == config.credentials.channelName
+      ) {
+        if (ttsLangs[args[0]] == undefined && !!args[0] && !!args[1]) {
+          ttsLangs[args[0]] = args[1];
+          functions.addLang(args[0], args[1]);
+        }
+      }
+      break;
+    case "!skiptts":
+      if (
+        userstate["mod"] ||
+        userstate["username"] == config.credentials.channelName
+      ) {
+        tts.movettsQueue();
+      }
+      break;
   }
   if (settings.commands[cmd] !== undefined) {
     client.say(config.credentials.channelName, settings.commands[cmd]);
-  }
-  if (cmd == "!addlang") {
-    if (
-      userstate["mod"] ||
-      userstate["username"] == config.credentials.channelName
-    ) {
-      if (ttsLangs[args[0]] == undefined && !!args[0] && !!args[1]) {
-        ttsLangs[args[0]] = args[1];
-        functions.addLang(args[0], args[1]);
-      }
-    }
-  }
-  if (cmd == "!skiptts") {
-    if (
-      userstate["mod"] ||
-      userstate["username"] == config.credentials.channelName
-    ) {
-      tts.movettsQueue();
-    }
   }
   //tts
   if (ttsLangs[lang] !== undefined) {
