@@ -397,7 +397,7 @@ let tts = (function() {
   let ttsQueue = [];
   function filterTTS(msg) {
     if (msg.length < 200 && msg.length > 1) {
-      if (settings.bannedPhrases.some(v => msg.includes(v))) {
+      if (settings.bannedPhrases.some(v => msg.match("\\b"+v+"\\b"))) {
         return false;
       } else {
         return true;
