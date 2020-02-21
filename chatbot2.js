@@ -260,28 +260,18 @@ client.on("chat", (channel, userstate, message, self) => {
         msg = msg.split(",").join(" ");
         if (tts.filterTTS(msg)) {
           if (tts.ttsQueue.length < 1) {
-            if (tts.ttsPlaying == false) {
+            if (ttsPlaying == false) {
               tts.sayTTS(ttsLangs[lang], msg);
-              tts.ttsPlaying = true;
+              ttsPlaying = true;
             } else {
-              console.log("dodaje bo gra");
               tts.addToQueue(ttsLangs[lang], msg);
             }
           } else {
-            let msg = args.toString();
-            msg = msg.split(",").join(" ");
             tts.addToQueue(ttsLangs[lang], msg);
           }
-        }
-      } else {
-        if (userstate["username"] == config.credentials.channelName) {
-          console.log("its stremer");
-        } else {
-          settings.ignoredtts.push(userstate["username"]);
-          functions.ignoreN(userstate["username"]);
-        }
-        console.log("msg too long, not adding");
-      }
+        } else return;
+      } else return;
     }
   }
 });
+
