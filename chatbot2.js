@@ -1,7 +1,7 @@
 const tmi = require("tmi.js");
-const config = require("./config.json");
-const commandsFile = require("./commands.json");
-const functions = require("./chatbotModules.js");
+const config = require("./data/config.json");
+const commandsFile = require("./data/commands.json");
+const functions = require("./features/chatbotModules.js");
 const remote = require("electron").remote;
 const main = remote.require("./index.js");
 const electron = require("electron");
@@ -9,6 +9,8 @@ const fs = require("fs");
 const googleTTS = require("google-tts-api");
 const $ = require("jquery");
 const path = require("path");
+const tts = require("./features/tts.js")
+
 const options = {
   options: {
     debug: true
@@ -65,9 +67,49 @@ const chatbot = (function() {
       document.getElementById(`${sectionName}-section`).classList.add("active");
     });
   });
+  $("#ttsSubOnly").on("change", function() {
+    if (this.checked) {
+      $("#ttsIncludeVips").prop("disabled", false);
+      ttsSubOnly = true;
+    } else {
+      $("#ttsIncludeVips")
+        .prop("disabled", true)
+        .prop("checked", false);
+      ttsSubOnly = false;
+    }
+  });
+  $("#ttsIncludeVips").on("change", function() {
+    if (this.checked) {
+      ttsIncludeVips = true;
+    } else {
+      ttsIncludeVips = false;
+    }
+  });
+  $("#sfxSubOnly").on("change", function() {
+    if (this.checked) {
+      $("#sfxIncludeVips").prop("disabled", false);
+      sfxSubOnly = true;
+    } else {
+      $("#sfxIncludeVips")
+        .prop("disabled", true)
+        .prop("checked", false);
+      sfxSubOnly = false;
+    }
+  });
+  $("#sfxIncludeVips").on("change", function() {
+    if (this.checked) {
+      sfxIncludeVips = true;
+    } else {
+      sfxIncludeVips = false;
+    }
+  });
+  
+$("#audio1").on("ended", tts.movettsQueue),
+$updateTTSVolume.click(tts.updateTTSVolume);
+
   $reloadSnd.click(_loadSounds);
   $updateBtn.click(_updateData);
-  $updateVolume.click(updateVolume);
+  $updateSoundVolume.click(updateSoundVolume);
   $statusON.click(_startBot);
   $statusOFF.click(_stopBot);
   //functions
@@ -158,47 +200,32 @@ const chatbot = (function() {
   _loadSounds();
 })();
 
-let tts = (function() {
-  let ttsQueue = [];
-
-  function addToQueue(lang, msg) {
-    ttsQueue.push([lang, msg]);
-  }
-  function sayTTS(lang, msg) {
-    googleTTS(msg, lang, 1)
-      .then(function(url) {
-        console.log(url);
-        $("#audio1")
-          .attr("src", url)
-          .get(0)
-          .play();
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
-  }
-
-  $("#audio1").on("ended", movettsQueue);
-  function movettsQueue() {
-    ttsPlaying = false;
-    if (ttsQueue.length < 1) {
-      return;
-    } else {
-      ttsPlaying = true;
-      let elTTS = ttsQueue.shift();
-      let lang = elTTS[0];
-      let msg = elTTS[1];
-      sayTTS(lang, msg);
+function canFireSfx(userData) {
+  let userBadge = {
+    vip: false,
+    sub: false
+  };
+  if (!userData.badges == "") {
+    if (userData.badges.vip == 1) {
+      userBadge.vip = true;
+    } else if (userData.subscriber) {
+      userBadge.sub = true;
     }
   }
-  return {
-    sayTTS: sayTTS,
-    addToQueue: addToQueue,
-    movettsQueue: movettsQueue,
-    ttsQueue: ttsQueue
-  };
-})();
-
+  if (sfxSubOnly) {
+    if (sfxIncludeVips) {
+      if (userBadge.vip || userBadge.sub) {
+        return true;
+      }
+    } else {
+      if (userBadge.sub) {
+        return true;
+      } else return false;
+    }
+  } else {
+    return true;
+  }
+}
 client.on("connected", function(address, port) {
   if (config.newMsg == "") {
     return;
@@ -290,15 +317,11 @@ client.on("chat", (channel, userstate, message, self) => {
     }
   }
   if (ttsLangs[lang] !== undefined) {
-    if (settings.ignoredtts.includes(userstate["username"])) {
-      return;
-    } else {
-      let msg = args.toString();
-      msg = msg.split(",").join(" ");
-      if (msg.length < 200) {
-        if (msg.length < 1) {
-          return;
-        } else {
+    if (tts.canFireTTS(userstate)) {
+      if (!settings.ignoredtts.includes(userstate["username"])) {
+        let msg = args.toString();
+        msg = msg.split(",").join(" ");
+        if (tts.filterTTS(msg)) {
           if (tts.ttsQueue.length < 1) {
             if (ttsPlaying == false) {
               tts.sayTTS(ttsLangs[lang], msg);
