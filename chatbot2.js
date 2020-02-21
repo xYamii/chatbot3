@@ -10,6 +10,7 @@ const googleTTS = require("google-tts-api");
 const $ = require("jquery");
 const path = require("path");
 const tts = require("./features/tts.js")
+const sfx = require("./features/sfx.js")
 
 const options = {
   options: {
@@ -36,80 +37,47 @@ let settings = {
 };
 
 let ttsLangs = commandsFile.ttsLangs;
-let ttsPlaying = false;
 
 const chatbot = (function() {
-  //variables
-  let soundPath = path.join(__dirname, "../");
-  //cache dom
-  let $soundTable = $("#soundtable");
-  let $botStatus = $("#bot-status");
-  let $soundVolume = $("#soundVolume");
-  let $ttsVolume = $("#ttsVolume");
-  let credentials = {
-    botUsername: config.credentials.botUsername,
-    channelName: config.credentials.channelName,
-    botOauth: config.credentials.botOauth,
-    newMsg: config.credentials.newMsg
-  };
-  let $statusON = $("#status-on");
-  let $statusOFF = $("#status-off");
-  let $reloadSnd = $("#reloadSounds");
-  let $updateBtn = $("#updateAll");
-  let $updateVolume = $("#updateVolume");
-  //bind events
-  let btns = document.getElementsByClassName("btn-link");
-  Array.from(btns).forEach(item => {
-    item.addEventListener("click", e => {
-      let sectionName = e.target.name;
-      sectionName = sectionName.substr(4);
-      document.getElementsByClassName("active")[0].classList.remove("active");
-      document.getElementById(`${sectionName}-section`).classList.add("active");
-    });
-  });
-  $("#ttsSubOnly").on("change", function() {
-    if (this.checked) {
-      $("#ttsIncludeVips").prop("disabled", false);
-      ttsSubOnly = true;
-    } else {
-      $("#ttsIncludeVips")
-        .prop("disabled", true)
-        .prop("checked", false);
-      ttsSubOnly = false;
-    }
-  });
-  $("#ttsIncludeVips").on("change", function() {
-    if (this.checked) {
-      ttsIncludeVips = true;
-    } else {
-      ttsIncludeVips = false;
-    }
-  });
-  $("#sfxSubOnly").on("change", function() {
-    if (this.checked) {
-      $("#sfxIncludeVips").prop("disabled", false);
-      sfxSubOnly = true;
-    } else {
-      $("#sfxIncludeVips")
-        .prop("disabled", true)
-        .prop("checked", false);
-      sfxSubOnly = false;
-    }
-  });
-  $("#sfxIncludeVips").on("change", function() {
-    if (this.checked) {
-      sfxIncludeVips = true;
-    } else {
-      sfxIncludeVips = false;
-    }
-  });
-  
-$("#audio1").on("ended", tts.movettsQueue),
-$updateTTSVolume.click(tts.updateTTSVolume);
-
-  $reloadSnd.click(_loadSounds);
+   //variables
+   let soundPath = path.join(__dirname, "./");
+   //cache dom
+   
+   let $botStatus = $("#bot-status");
+   let $soundVolume = $("#soundVolume");
+   let $ttsVolume = $("#ttsVolume");
+   let $ignoredList = $("#ignoredList");
+   let $phraseList = $("#phraseList");
+   let credentials = {
+     botUsername: config.credentials.botUsername,
+     channelName: config.credentials.channelName,
+     botOauth: config.credentials.botOauth,
+     newMsg: config.credentials.newMsg
+   };
+   let $console = $("#console");
+   let $statusON = $("#status-on");
+   let $statusOFF = $("#status-off");
+   let $reloadSnd = $("#reloadSounds");
+   let $updateBtn = $("#updateAll");
+   let $updateSoundVolume = $("#updateSoundVol");
+   let $updateTTSVolume = $("#updateTTSVol");
+   let $addPhraseBtn = $("#addPhrase");
+   let $addGuyBtn = $("#addGuy");
+   //bind events
+   let btns = document.getElementsByClassName("btn-link");
+   Array.from(btns).forEach(item => {
+     item.addEventListener("click", e => {
+       let sectionName = e.target.name;
+       sectionName = sectionName.substr(4);
+       document.getElementsByClassName("active")[0].classList.remove("active");
+       document.getElementById(`${sectionName}-section`).classList.add("active");
+     });
+   });
+  $("#audio1").on("ended", tts.movettsQueue),
+  $updateTTSVolume.click(tts.updateTTSVolume);
+  $reloadSnd.click(sfx._loadSounds);
   $updateBtn.click(_updateData);
-  $updateSoundVolume.click(updateSoundVolume);
+  $updateSoundVolume.click(sfx.updateSoundVolume);
   $statusON.click(_startBot);
   $statusOFF.click(_stopBot);
   //functions
@@ -132,28 +100,7 @@ $updateTTSVolume.click(tts.updateTTSVolume);
     $statusOFF.addClass("disabled");
     $statusON.removeClass("disabled");
   }
-  function _loadSounds() {
-    fs.readdir(soundPath + "/sounds", function(err, items) {
-      if (items !== undefined) {
-        let soundArray = [];
-        for (var i = 0; i < items.length; i++) {
-          let z = items[i].slice(0, -4);
-          soundArray.push("!" + z);
-        }
-        settings.sounds = soundArray;
-        $soundTable.html(" ");
-        let soundsData = " ";
-        for (let key in soundArray) {
-          soundsData += ` <tr><td>${parseInt(key) + 1}</td><td>${
-            soundArray[key]
-          }</td></tr>`;
-        }
-        $soundTable.html(soundsData);
-      } else {
-        $soundTable.html("there are no sounds added to bot xd");
-      }
-    });
-  }
+  
   function _updateData() {
     let newData = {
       botUsername: $("#botUsername").val(),
@@ -180,52 +127,12 @@ $updateTTSVolume.click(tts.updateTTSVolume);
       }
     });
   }
-  function updateVolume() {
-    settings.audioVolume = $soundVolume;
-    settings.ttsVolume = $ttsVolume;
-    fs.readFile(__dirname + "/config.json", (err, data) => {
-      if (err) console.log(err);
-      let obj = JSON.parse(data);
-      obj["volumes"]["audioVolume"] = $soundVolume.val();
-      obj["volumes"]["ttsVolume"] = $ttsVolume.val();
-      let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "/config.json", json, added);
-      function added(err) {
-        if (err) console.log(err);
-        console.log("updated succesfuly");
-      }
-    });
-  }
+ 
   _init();
-  _loadSounds();
+  sfx._loadSounds();
 })();
 
-function canFireSfx(userData) {
-  let userBadge = {
-    vip: false,
-    sub: false
-  };
-  if (!userData.badges == "") {
-    if (userData.badges.vip == 1) {
-      userBadge.vip = true;
-    } else if (userData.subscriber) {
-      userBadge.sub = true;
-    }
-  }
-  if (sfxSubOnly) {
-    if (sfxIncludeVips) {
-      if (userBadge.vip || userBadge.sub) {
-        return true;
-      }
-    } else {
-      if (userBadge.sub) {
-        return true;
-      } else return false;
-    }
-  } else {
-    return true;
-  }
-}
+
 client.on("connected", function(address, port) {
   if (config.newMsg == "") {
     return;
@@ -235,19 +142,45 @@ client.on("connected", function(address, port) {
 });
 
 client.on("chat", (channel, userstate, message, self) => {
-  let mess = message.toLowerCase();
-  let messageArray = mess.split(" ");
-  let cmd = messageArray[0];
+  if (self || settings.nigas.includes(userstate["username"])) return;
+  if (
+    userstate["msg-id"] !== undefined &&
+    userstate["msg-id"] == "highlighted-message"
+  ) {
+    let msg = message.toString();
+    msg = msg.split(",").join(" ");
+    console.log(msg);
+    if (tts.ttsQueue.length < 1) {
+      if (ttsPlaying == false) {
+        tts.sayTTS("fi-FI", msg);
+        ttsPlaying = true;
+      } else {
+        tts.addToQueue("fi-FI", msg);
+      }
+    } else {
+      tts.addToQueue("fi-FI", msg);
+    }
+  }
+  let messageArray = message.split(" ");
+  let cmd = messageArray[0].toLowerCase();
   let lang;
   if (cmd[0] == "!") {
     lang = cmd.substr(1);
   }
+  // if(userstate)
+  // console.log(userstate.badges.hasOwnProperty("vip"));
+  //sounds fire
   let args = messageArray.slice(1);
-  if (self) return;
-  if (settings.sounds.includes(cmd)) {
-    soundname = cmd.substr(1);
-    functions.playSound(soundname, settings.audioVolume);
-  }
+  // if (settings.sounds.includes(cmd)) {
+  //   if (sfx.canFireSfx(userstate)) {
+  //     soundname = cmd.substr(1);
+  //     functions.playSound(soundname, settings.audioVolume);
+  //   }
+  // }
+
+  //no msg-id when normal msg
+  //msg-id: "highlighted-message"
+  //msg-id: "skip-subs-mode-message"
   if (cmd == "!langs") {
     let languages = Object.keys(ttsLangs);
     let langlist = "";
@@ -255,9 +188,6 @@ client.on("chat", (channel, userstate, message, self) => {
       langlist = langlist + " " + languages[i];
     }
     client.say(config.credentials.channelName, langlist);
-  }
-  if (cmd == "!d") {
-    console.log(soundPath);
   }
   if (cmd == "!ignore") {
     if (
@@ -268,10 +198,11 @@ client.on("chat", (channel, userstate, message, self) => {
         args == config.credentials.channelName ||
         settings.ignoredtts.includes(args[0])
       ) {
-        console.log("already in array / its stremer");
+        logToConsole("error", "already in array / its stremer");
       } else {
         settings.ignoredtts.push(args[0]);
         functions.ignoreN(args[0]);
+        chatbot.displayIgnored();
       }
     }
   }
@@ -284,13 +215,19 @@ client.on("chat", (channel, userstate, message, self) => {
         let index = settings.ignoredtts.indexOf(args[0]);
         settings.ignoredtts.splice(index, 1);
         functions.unignore(args[0]);
+        chatbot.displayIgnored();
       }
     }
   }
   if (cmd == "!sounds") {
     let soundList = " ";
     for (var i = 0; i < settings.sounds.length; i++) {
-      soundList = soundList + " " + settings.sounds[i];
+      if (soundList.length > 400) {
+        client.say(config.credentials.channelName, soundList);
+        soundList = " ";
+      } else {
+        soundList = soundList + " " + settings.sounds[i];
+      }
     }
     client.say(config.credentials.channelName, soundList);
   }
@@ -302,7 +239,7 @@ client.on("chat", (channel, userstate, message, self) => {
       userstate["mod"] ||
       userstate["username"] == config.credentials.channelName
     ) {
-      if (ttsLangs[args[0]] == undefined) {
+      if (ttsLangs[args[0]] == undefined ) {
         ttsLangs[args[0]] = args[1];
         functions.addLang(args[0], args[1]);
       }
@@ -323,9 +260,9 @@ client.on("chat", (channel, userstate, message, self) => {
         msg = msg.split(",").join(" ");
         if (tts.filterTTS(msg)) {
           if (tts.ttsQueue.length < 1) {
-            if (ttsPlaying == false) {
+            if (tts.ttsPlaying == false) {
               tts.sayTTS(ttsLangs[lang], msg);
-              ttsPlaying = true;
+              tts.ttsPlaying = true;
             } else {
               console.log("dodaje bo gra");
               tts.addToQueue(ttsLangs[lang], msg);

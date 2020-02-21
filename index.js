@@ -9,7 +9,7 @@ app.on("ready", () => {
       nodeIntegration: true
     }
   });
-  win.loadURL(`file://${__dirname}/index_2.html`);
+  win.loadURL(`file://${__dirname}/index.html`);
 });
 app.on("window-all-closed", app.quit);
 app.on("before-quit", () => {

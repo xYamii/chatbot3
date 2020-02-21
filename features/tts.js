@@ -4,16 +4,34 @@ const $ = require("jquery");
 const commandsFile = require("../data/commands.json");
 let $ttsVolume = $("#ttsVolume");
 
+let ttsPlaying = false;
 let ttsSettings = {
-    ttsPlaying:false,
     ttsSubOnly:false,
     ttsIncludeVips:false,
     bannedPhrases:commandsFile.bannedPhrases
 }
 let ttsQueue = [];
-
+$("#ttsSubOnly").on("change", function() {
+    if (this.checked) {
+      $("#ttsIncludeVips").prop("disabled", false);
+      ttsSettings.ttsSubOnly = true;
+    } else {
+      $("#ttsIncludeVips")
+        .prop("disabled", true)
+        .prop("checked", false);
+        ttsSettings.ttsSubOnly = false;
+    }
+  });
+  $("#ttsIncludeVips").on("change", function() {
+    if (this.checked) {
+        ttsSettings.ttsIncludeVips = true;
+    } else {
+        ttsSettings.ttsIncludeVips = false;
+    }
+  });
 console.log(__dirname)
 module.exports = {
+  ttsPlaying,
     ttsQueue,
      filterTTS(msg) {
       if (msg.length < 200 && msg.length > 1) {
@@ -30,6 +48,7 @@ module.exports = {
       ttsQueue.push([lang, msg]);
     },
     sayTTS(lang, msg) {
+      ttsPlaying = true;
       googleTTS(msg, lang, 1)
         .then(function(url) {
           $("#audio1")
