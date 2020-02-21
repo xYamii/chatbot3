@@ -498,10 +498,7 @@ client.on("chat", (channel, userstate, message, self) => {
   switch(cmd) {
     case "!langs":
       let languages = Object.keys(ttsLangs);
-      let langlist = "";
-      for (var i = 0; i < languages.length; i++) {
-        langlist = langlist + " " + languages[i];
-      }
+      let langlist = Object.keys(languages).join(", ");
       client.say(config.credentials.channelName, langlist);
       break;
     case "!ignore":
