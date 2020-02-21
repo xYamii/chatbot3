@@ -551,7 +551,7 @@ client.on("chat", (channel, userstate, message, self) => {
         userstate["mod"] ||
         userstate["username"] == config.credentials.channelName
       ) {
-        if (ttsLangs[args[0]] == undefined && !!args[0] && !!args[1]) {
+        if (ttsLangs[args[0]] == undefined && args.length == 2) {
           ttsLangs[args[0]] = args[1];
           functions.addLang(args[0], args[1]);
         }
