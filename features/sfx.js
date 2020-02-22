@@ -4,13 +4,13 @@ const path = require("path");
 let $soundVolume = $("#soundVolume");
 let $soundTable = $("#soundtable");
 let sfxSettings = {
-    sfxSubOnly:false,
-    sfxIncludeVips:false,
-}
+  sfxSubOnly: false,
+  sfxIncludeVips: false
+};
 let soundPath = path.join(__dirname, "../");
 module.exports = {
-_loadSounds() {
-    fs.readdir(soundPath + "/sounds", function(err, items) {
+  _loadSounds() {
+    fs.readdir(soundPath + "./sounds", function(err, items) {
       if (items !== undefined) {
         let soundArray = [];
         for (var i = 0; i < items.length; i++) {
@@ -31,7 +31,7 @@ _loadSounds() {
       }
     });
   },
-   canFireSfx(userData) {
+  canFireSfx(userData) {
     let userBadge = {
       vip: false,
       sub: false
@@ -66,27 +66,27 @@ _loadSounds() {
       let json = JSON.stringify(obj, null, 2);
       fs.writeFile(__dirname + "/config.json", json, added);
       function added(err) {
-       // if (err) logToConsole("error", err);
-       // logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
+        // if (err) logToConsole("error", err);
+        // logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
       }
     });
   }
-}
-  $("#sfxSubOnly").on("change", function() {
-    if (this.checked) {
-      $("#sfxIncludeVips").prop("disabled", false);
-      sfxSettings.sfxSubOnly = true;
-    } else {
-      $("#sfxIncludeVips")
-        .prop("disabled", true)
-        .prop("checked", false);
-        sfxSettings.sfxSubOnly = false;
-    }
-  });
-  $("#sfxIncludeVips").on("change", function() {
-    if (this.checked) {
-      sfxSettings.sfxIncludeVips = true;
-    } else {
-      sfxSettings.sfxIncludeVips = false;
-    }
-  });
+};
+$("#sfxSubOnly").on("change", function() {
+  if (this.checked) {
+    $("#sfxIncludeVips").prop("disabled", false);
+    sfxSettings.sfxSubOnly = true;
+  } else {
+    $("#sfxIncludeVips")
+      .prop("disabled", true)
+      .prop("checked", false);
+    sfxSettings.sfxSubOnly = false;
+  }
+});
+$("#sfxIncludeVips").on("change", function() {
+  if (this.checked) {
+    sfxSettings.sfxIncludeVips = true;
+  } else {
+    sfxSettings.sfxIncludeVips = false;
+  }
+});
