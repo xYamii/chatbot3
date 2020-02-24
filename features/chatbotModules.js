@@ -48,5 +48,8 @@ module.exports = {
         console.log("updated succesfuly");
       }
     });
+  },
+  logToConsole: (msgType, logMsg) => {
+    $console.append(`<p class="${msgType}">${logMsg}<p>`);
   }
 };
