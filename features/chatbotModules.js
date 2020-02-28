@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 let soundPath = path.join(__dirname, "../");
+let $console = $("#console");
 module.exports = {
   playSound: (s, audioVolume) => {
     var audio = new Audio(soundPath + `/sounds/${s}.wav`);

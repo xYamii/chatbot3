@@ -1,6 +1,8 @@
 const fs = require("fs");
 const $ = require("jquery");
 const path = require("path");
+const chatbotLogic = require("./chatbotLogic.js");
+
 let $soundVolume = $("#soundVolume");
 let $soundTable = $("#soundtable");
 let sfxSettings = {
@@ -17,7 +19,7 @@ module.exports = {
           let z = items[i].slice(0, -4);
           soundArray.push("!" + z);
         }
-        settings.sounds = soundArray;
+        chatbotLogic.settings.sounds = soundArray;
         $soundTable.html(" ");
         let soundsData = " ";
         for (let key in soundArray) {
@@ -59,12 +61,12 @@ module.exports = {
   },
   updateSoundVolume() {
     settings.audioVolume = $soundVolume.val();
-    fs.readFile(__dirname + "/config.json", (err, data) => {
+    fs.readFile(__dirname + "../data/config.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
       obj["volumes"]["audioVolume"] = $soundVolume.val();
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "/config.json", json, added);
+      fs.writeFile(__dirname + "../data/config.json", json, added);
       function added(err) {
         // if (err) logToConsole("error", err);
         // logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
