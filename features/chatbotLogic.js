@@ -36,6 +36,7 @@ let settings = {
   ttsLangs: commandsFile.ttsLangs
 };
 let $phraseList = $("#phraseList");
+let $ignoredList = $("#ignoredList");
 let folderPath = path.join(__dirname, "../");
 module.exports = {
   //variables
@@ -103,7 +104,7 @@ module.exports = {
           .index($remove);
         $remove.remove();
         settings.bannedPhrases.splice(phraseToRemove, 1);
-        remFromFile("bannedPhrases", phraseToRemove);
+        module.exports.remFromFile("bannedPhrases", phraseToRemove);
       });
     });
   },
@@ -113,7 +114,7 @@ module.exports = {
       phrasesData += `<li> - ${settings.bannedPhrases[key]} <i class="del1">X</i> </li>`;
     }
     $phraseList.html(phrasesData);
-    bindDeletePhrases();
+    module.exports.bindDeletePhrases();
   },
   addPhrase(e) {
     let phrase = $(e.target)
@@ -135,10 +136,31 @@ module.exports = {
           chatbotModules.logToConsole("info", "Added phrase");
         }
       });
-      displayPhrases();
+      module.exports.displayPhrases();
     } else return;
   },
-
+  bindDeleteGuy() {
+    let ppl = document.getElementsByClassName("del");
+    Array.from(ppl).forEach(item => {
+      item.addEventListener("click", e => {
+        let $remove = $(e.target).closest("li");
+        let guyToRemove = $("#ignoredList")
+          .find("li")
+          .index($remove);
+        $remove.remove();
+        settings.ignoredtts.splice(guyToRemove, 1);
+        module.exports.remFromFile("ignoredPpl", guyToRemove);
+      });
+    });
+  },
+  displayIgnored() {
+    let ignoredData = "";
+    for (let key in settings.ignoredtts) {
+      ignoredData += `<li> - ${settings.ignoredtts[key]} <i class="del">X</i> </li>`;
+    }
+    $ignoredList.html(ignoredData);
+    module.exports.bindDeleteGuy();
+  },
   addGuy(e) {
     let guy = $(e.target)
       .prev("input")
@@ -159,29 +181,7 @@ module.exports = {
           chatbotModules.logToConsole("info", "Guy added: " + guy);
         }
       });
-      displayIgnored();
+      module.exports.displayIgnored();
     } else return;
-  },
-  displayIgnored() {
-    let ignoredData = "";
-    for (let key in settings.ignoredtts) {
-      ignoredData += `<li> - ${settings.ignoredtts[key]} <i class="del">X</i> </li>`;
-    }
-    $ignoredList.html(ignoredData);
-    bindDeleteGuy();
-  },
-  bindDeleteGuy() {
-    let ppl = document.getElementsByClassName("del");
-    Array.from(ppl).forEach(item => {
-      item.addEventListener("click", e => {
-        let $remove = $(e.target).closest("li");
-        let guyToRemove = $("#ignoredList")
-          .find("li")
-          .index($remove);
-        $remove.remove();
-        settings.ignoredtts.splice(guyToRemove, 1);
-        remFromFile("ignoredPpl", guyToRemove);
-      });
-    });
   }
 };
