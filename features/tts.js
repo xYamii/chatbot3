@@ -53,7 +53,7 @@ module.exports = {
     ttsQueue.push([lang, msg]);
   },
   sayTTS(lang, msg) {
-    ttsPlaying = true;
+    module.exports.ttsPlaying = true;
     googleTTS(msg, lang, 1)
       .then(function(url) {
         $("#audio1")
@@ -68,18 +68,17 @@ module.exports = {
   },
 
   movettsQueue() {
-    console.log("dd");
-    ttsPlaying = false;
+    module.exports.ttsPlaying = false;
     if (ttsQueue.length < 1) {
       let audio = $("#audio1")[0];
       audio.pause();
       return;
     } else {
-      ttsPlaying = true;
+      module.exports.ttsPlaying = true;
       let elTTS = ttsQueue.shift();
       let lang = elTTS[0];
       let msg = elTTS[1];
-      sayTTS(lang, msg);
+      module.exports.sayTTS(lang, msg);
     }
   },
 

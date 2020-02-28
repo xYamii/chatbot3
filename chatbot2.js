@@ -98,6 +98,7 @@ client.on("chat", (channel, userstate, message, self) => {
             console.log(tts.ttsQueue.length);
             if (tts.ttsPlaying == false) {
               tts.sayTTS(chatbotLogic.settings.ttsLangs[lang], msg);
+              tts.ttsPlaying == true;
             } else {
               tts.addToQueue(chatbotLogic.settings.ttsLangs[lang], msg);
             }
