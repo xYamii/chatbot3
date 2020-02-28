@@ -1,8 +1,9 @@
 const fs = require("fs");
-const commandsFile = require("./data/commands.json");
-const config = require("./data/config.json");
-const chatbotModules = require("./chatbotModules.js")
-
+const commandsFile = require("../data/commands.json");
+const config = require("../data/config.json");
+const chatbotModules = require("./chatbotModules.js");
+const $ = require("jquery");
+const path = require("path");
 const chatbotOptions = {
   options: {
     debug: true
@@ -17,7 +18,7 @@ const chatbotOptions = {
   },
   channels: [config.credentials.channelName]
 };
-
+console.log("logic" + __dirname);
 let credentials = {
   botUsername: config.credentials.botUsername,
   channelName: config.credentials.channelName,
@@ -31,10 +32,11 @@ let settings = {
   ignoredtts: commandsFile.ignoredPpl,
   commands: commandsFile.botCommands,
   bannedPhrases: commandsFile.bannedPhrases,
-  bots: ["qdth", "moobot", "nightbot", "eddwardg"], // hardcoded bots
-  ttsLangs = commandsFile.ttsLangs
+  bots: ["qdth", "moobot", "nightbot", "eddwardg"],
+  ttsLangs: commandsFile.ttsLangs
 };
-
+let $phraseList = $("#phraseList");
+let folderPath = path.join(__dirname, "../");
 module.exports = {
   //variables
   chatbotOptions,
@@ -55,21 +57,21 @@ module.exports = {
     };
 
     if (botUsername == "" || channelName == "" || botOauth == "") {
-        chatbotModules.logToConsole("error", "You need to fill all data");
+      chatbotModules.logToConsole("error", "You need to fill all data");
     } else {
       chatbotOptions.identity.username = newData.botUsername;
       chatbotOptions.identity.password = newData.botOauth;
       chatbotOptions.channels[0] = newData.channelName;
-      fs.readFile(__dirname + "../data/config.json", function(err, data) {
+      fs.readFile(folderPath + "./data/config.json", function(err, data) {
         if (err) {
-          chatbotModules.logToConsole("error", err);
+          console.log(err);
         }
         let obj = JSON.parse(data);
         for (let prop in obj.credentials) {
           obj["credentials"][prop] = newData[prop];
         }
         let json = JSON.stringify(obj, null, 2);
-        fs.writeFile(__dirname + "../data/config.json", json, added);
+        fs.writeFile(folderPath + "./data/config.json", json, added);
         function added(err) {
           if (err) chatbotModules.logToConsole("error", err);
           chatbotModules.logToConsole("info", "Data updated");
@@ -77,36 +79,19 @@ module.exports = {
       });
     }
   },
-  addPhrase(e) {
-    let phrase = $(e.target)
-      .prev("input")
-      .val();
-    $(e.target)
-      .prev("input")
-      .val("");
-    if (!settings.bannedPhrases.includes(phrase)) {
-      settings.bannedPhrases.push(phrase);
-      fs.readFile(__dirname + "../data/commands.json", (err, data) => {
-        if (err) chatbotModules.logToConsole("error", err);
-        let obj = JSON.parse(data);
-        obj["bannedPhrases"].push(phrase);
-        let json = JSON.stringify(obj, null, 2);
-        fs.writeFile(__dirname + "../data/commands.json", json, added);
-        function added(err) {
-          if (err) chatbotModules.logToConsole("error", err);
-          chatbotModules.logToConsole("info", "Added phrase");
-        }
-      });
-      displayPhrases();
-    } else return;
-  },
-  displayPhrases() {
-    let phrasesData = "";
-    for (let key in settings.bannedPhrases) {
-      phrasesData += `<li> - ${settings.bannedPhrases[key]} <i class="del1">X</i> </li>`;
-    }
-    $phraseList.html(phrasesData);
-    bindDeletePhrases();
+  remFromFile(listType, index) {
+    fs.readFile(folderPath + "./data/commands.json", (err, data) => {
+      if (err) console.log(err);
+      let obj = JSON.parse(data);
+      let w = obj[listType][index];
+      obj[listType].splice(index, 1);
+      let json = JSON.stringify(obj, null, 2);
+      fs.writeFile(folderPath + "./data/commands.json", json, added);
+      function added(err) {
+        if (err) console.log(err);
+        chatbotModules.logToConsole("info", "removed: " + w);
+      }
+    });
   },
   bindDeletePhrases() {
     let ppl = document.getElementsByClassName("del1");
@@ -122,20 +107,38 @@ module.exports = {
       });
     });
   },
-  remFromFile(listType, index) {
-    fs.readFile(__dirname + "../data/commands.json", (err, data) => {
-      if (err) console.log(err);
-      let obj = JSON.parse(data);
-      let w = obj[listType][index];
-      obj[listType].splice(index, 1);
-      let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "../data/commands.json", json, added);
-      function added(err) {
-        if (err) console.log(err);
-        chatbotModules.logToConsole("info", "removed: " + w);
-      }
-    });
+  displayPhrases() {
+    let phrasesData = "";
+    for (let key in settings.bannedPhrases) {
+      phrasesData += `<li> - ${settings.bannedPhrases[key]} <i class="del1">X</i> </li>`;
+    }
+    $phraseList.html(phrasesData);
+    bindDeletePhrases();
   },
+  addPhrase(e) {
+    let phrase = $(e.target)
+      .prev("input")
+      .val();
+    $(e.target)
+      .prev("input")
+      .val("");
+    if (!settings.bannedPhrases.includes(phrase)) {
+      settings.bannedPhrases.push(phrase);
+      fs.readFile(folderPath + "./data/commands.json", (err, data) => {
+        if (err) chatbotModules.logToConsole("error", err);
+        let obj = JSON.parse(data);
+        obj["bannedPhrases"].push(phrase);
+        let json = JSON.stringify(obj, null, 2);
+        fs.writeFile(folderPath + "./data/commands.json", json, added);
+        function added(err) {
+          if (err) chatbotModules.logToConsole("error", err);
+          chatbotModules.logToConsole("info", "Added phrase");
+        }
+      });
+      displayPhrases();
+    } else return;
+  },
+
   addGuy(e) {
     let guy = $(e.target)
       .prev("input")
@@ -145,12 +148,12 @@ module.exports = {
       .val("");
     if (!settings.ignoredtts.includes(guy)) {
       settings.ignoredtts.push(guy);
-      fs.readFile(__dirname + "../data/commands.json", (err, data) => {
+      fs.readFile(folderPath + "./data/commands.json", (err, data) => {
         if (err) chatbotModules.logToConsole("error", err);
         let obj = JSON.parse(data);
         obj["ignoredPpl"].push(guy);
         let json = JSON.stringify(obj, null, 2);
-        fs.writeFile(__dirname + "../data/commands.json", json, added);
+        fs.writeFile(folderPath + "./data/commands.json", json, added);
         function added(err) {
           if (err) chatbotModules.logToConsole("error", err);
           chatbotModules.logToConsole("info", "Guy added: " + guy);
@@ -159,7 +162,7 @@ module.exports = {
       displayIgnored();
     } else return;
   },
-   displayIgnored() {
+  displayIgnored() {
     let ignoredData = "";
     for (let key in settings.ignoredtts) {
       ignoredData += `<li> - ${settings.ignoredtts[key]} <i class="del">X</i> </li>`;
@@ -167,7 +170,7 @@ module.exports = {
     $ignoredList.html(ignoredData);
     bindDeleteGuy();
   },
-   bindDeleteGuy() {
+  bindDeleteGuy() {
     let ppl = document.getElementsByClassName("del");
     Array.from(ppl).forEach(item => {
       item.addEventListener("click", e => {

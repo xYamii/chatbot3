@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
+const $ = require("jquery");
 let soundPath = path.join(__dirname, "../");
 let $console = $("#console");
 module.exports = {

@@ -1,9 +1,9 @@
-const tts = require("./features/tts.js");
-const sfx = require("./features/sfx.js");
+const tts = require("./tts.js");
+const sfx = require("./sfx.js");
 const chatbotLogic = require("./chatbotLogic.js");
 const chatbotModules = require("./chatbotModules.js");
 const fs = require("fs");
-
+const $ = require("jquery");
 let init = (function() {
   let btns = document.getElementsByClassName("btn-link");
   Array.from(btns).forEach(item => {
@@ -20,7 +20,6 @@ let $reloadSnd = $("#reloadSounds");
 let $updateSoundVolume = $("#updateSoundVol");
 let $updateTTSVolume = $("#updateTTSVol");
 let $ignoredList = $("#ignoredList");
-let $phraseList = $("#phraseList");
 let $addPhraseBtn = $("#addPhrase");
 let $addGuyBtn = $("#addGuy");
 let $updateBtn = $("#updateAll");
@@ -31,6 +30,5 @@ $updateSoundVolume.click(sfx.updateSoundVolume);
 $updateTTSVolume.click(tts.updateTTSVolume);
 $("#audio1").on("ended", tts.movettsQueue);
 $ignoredList.click(chatbotLogic.displayIgnored);
-$phraseList.click(chatbotLogic.displayPhrases);
 $addPhraseBtn.click(chatbotLogic.addPhrase);
 $addGuyBtn.click(chatbotLogic.addGuy);

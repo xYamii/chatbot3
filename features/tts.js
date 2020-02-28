@@ -37,7 +37,10 @@ module.exports = {
   ttsQueue,
   filterTTS(msg) {
     if (msg.length < 200 && msg.length > 1) {
-      if (ttsSettings.bannedPhrases.some(v => msg.match("\\b" + v + "\\b"))) {
+      if (
+        ttsSettings.bannedPhrases.length > 0 &&
+        ttsSettings.bannedPhrases.some(v => msg.match("\\b" + v + "\\b"))
+      ) {
         return false;
       } else {
         return true;
@@ -65,6 +68,7 @@ module.exports = {
   },
 
   movettsQueue() {
+    console.log("dd");
     ttsPlaying = false;
     if (ttsQueue.length < 1) {
       let audio = $("#audio1")[0];

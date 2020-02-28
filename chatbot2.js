@@ -8,13 +8,14 @@ const electron = require("electron");
 const fs = require("fs");
 const googleTTS = require("google-tts-api");
 const $ = require("jquery");
-const path = require("path");
+
 const tts = require("./features/tts.js");
 const sfx = require("./features/sfx.js");
 const chatbotLogic = require("./features/chatbotLogic.js");
 
 const client = new tmi.client(chatbotLogic.chatbotOptions);
 // update module reference
+
 const chatbot = (function() {
   let $botStatus = $("#bot-status");
   let $statusON = $("#status-on");
@@ -35,17 +36,21 @@ const chatbot = (function() {
     $statusON.removeClass("disabled");
   }
 })();
-
+chatbotLogic.inputLoad();
 client.on("connected", function(address, port) {
   if (config.newMsg == "") {
     return;
   } else {
-    client.say(chatbotLogic.credentials.channelName, `${chatbotLogic.credentials.newMsg}`);
+    client.say(
+      chatbotLogic.credentials.channelName,
+      `${chatbotLogic.credentials.newMsg}`
+    );
   }
 });
 
 client.on("chat", (channel, userstate, message, self) => {
-  if (self || settings.nigas.includes(userstate["username"])) return;
+  if (self || chatbotLogic.settings.bots.includes(userstate["username"]))
+    return;
   if (
     userstate["msg-id"] !== undefined &&
     userstate["msg-id"] == "highlighted-message"
@@ -53,9 +58,8 @@ client.on("chat", (channel, userstate, message, self) => {
     let msg = message.toString();
     msg = msg.split(",").join(" ");
     if (tts.ttsQueue.length < 1) {
-      if (ttsPlaying == false) {
+      if (tts.ttsPlaying == false) {
         tts.sayTTS("fi-FI", msg);
-        ttsPlaying = true;
       } else {
         tts.addToQueue("fi-FI", msg);
       }
@@ -83,21 +87,22 @@ client.on("chat", (channel, userstate, message, self) => {
   //no msg-id when normal msg
   //msg-id: "highlighted-message"
   //msg-id: "skip-subs-mode-message"
-  if (ttsLangs[lang] !== undefined) {
+  if (chatbotLogic.settings.ttsLangs[lang] !== undefined) {
+    console.log(tts.ttsPlaying);
     if (tts.canFireTTS(userstate)) {
-      if (!settings.ignoredtts.includes(userstate["username"])) {
+      if (!chatbotLogic.settings.ignoredtts.includes(userstate["username"])) {
         let msg = args.toString();
         msg = msg.split(",").join(" ");
         if (tts.filterTTS(msg)) {
           if (tts.ttsQueue.length < 1) {
-            if (ttsPlaying == false) {
-              tts.sayTTS(ttsLangs[lang], msg);
-              ttsPlaying = true;
+            console.log(tts.ttsQueue.length);
+            if (tts.ttsPlaying == false) {
+              tts.sayTTS(chatbotLogic.settings.ttsLangs[lang], msg);
             } else {
-              tts.addToQueue(ttsLangs[lang], msg);
+              tts.addToQueue(chatbotLogic.settings.ttsLangs[lang], msg);
             }
           } else {
-            tts.addToQueue(ttsLangs[lang], msg);
+            tts.addToQueue(chatbotLogic.settings.ttsLangs[lang], msg);
           }
         } else return;
       } else return;
@@ -116,13 +121,13 @@ client.on("chat", (channel, userstate, message, self) => {
       ) {
         if (
           args == chatbotLogic.credentials.channelName ||
-          settings.ignoredtts.includes(args[0])
+          chatbotLogic.settings.ignoredtts.includes(args[0])
         ) {
-          logToConsole("error", "already in array / its stremer");
+          functions.logToConsole("error", "already in array / its stremer");
         } else {
           chatbotLogic.settings.ignoredtts.push(args[0]);
           functions.ignoreN(args[0]);
-          chatbot.displayIgnored();
+          chatbotLogic.displayIgnored();
         }
       }
       break;
@@ -135,13 +140,13 @@ client.on("chat", (channel, userstate, message, self) => {
           let index = chatbotLogic.settings.ignoredtts.indexOf(args[0]);
           chatbotLogic.settings.ignoredtts.splice(index, 1);
           functions.unignore(args[0]);
-          chatbot.displayIgnored();
+          chatbotLogic.displayIgnored();
         }
       }
       break;
     case "!sounds":
       let soundList = " ";
-      for (var i = 0; i < settings.sounds.length; i++) {
+      for (var i = 0; i < chatbotLogic.settings.sounds.length; i++) {
         if (soundList.length > 400) {
           client.say(chatbotLogic.credentials.channelName, soundList);
           soundList = " ";
