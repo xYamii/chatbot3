@@ -1,9 +1,9 @@
 {
   "credentials": {
-    "botUsername": "bot_xdonut",
-    "channelName": "yamii",
-    "botOauth": "oauth:h8etolw88fckw5vq96k1w21rejtjp8",
-    "newMsg": "www"
+    "botUsername": "",
+    "channelName": "",
+    "botOauth": "",
+    "newMsg": ""
   },
   "volumes": {
     "audioVolume": "1",
