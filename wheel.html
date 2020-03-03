@@ -13,8 +13,10 @@
                         <p>Sorry, your browser doesn't support canvas. Please try another.</p>
                             </canvas>
         <script>
+            $("#wheel").hide();
+            //let wheel = require("./features/wheel.js");
             let theWheel;
- $(function() {
+        $(function() {
         var socket = io();
         socket.on("spinWheel", function(data) {
           console.log(data);
@@ -51,11 +53,11 @@
             });
 
 
-         // $("div", "#wheel").show();
+         $("#wheel").show();
           startSpin();
         }
         function hideDiv() {
-         // $("div", "#wheel").hide();
+         $("#wheel").hide();
           resetWheel();
         }
       });
@@ -123,6 +125,7 @@
             {
                 // Just alert to the user what happened.
                 // In a real project probably want to do something more interesting than this with the result.
+                //wheel.displayWinner(indicatedSegment.text)
                     alert("You have won " + indicatedSegment.text);
             }
 

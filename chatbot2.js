@@ -1,26 +1,11 @@
 const tmi = require("tmi.js");
-const config = require("./data/config.json"); //
-const commandsFile = require("./data/commands.json"); //
 const functions = require("./features/chatbotModules.js");
 const remote = require("electron").remote;
 const main = remote.require("./index.js");
 const electron = require("electron");
-const fs = require("fs");
+const wheel = require("./features/wheel.js");
 const $ = require("jquery");
-const express = require("express");
-var exApp = require("express")();
-var http = require("http").Server(exApp);
-var io = require("socket.io")(http);
-var port = process.env.PORT || 3000;
 
-http.listen(port, function() {
-  console.log("listening on *:" + port);
-});
-exApp.use("/static", express.static("static"));
-
-exApp.get("/wheel", function(req, res) {
-  res.sendFile(__dirname + "/wheel.html");
-});
 const tts = require("./features/tts.js");
 const sfx = require("./features/sfx.js");
 const chatbotLogic = require("./features/chatbotLogic.js");
@@ -49,8 +34,9 @@ const chatbot = (function() {
   }
 })();
 chatbotLogic.inputLoad();
+sfx._loadSounds();
 client.on("connected", function(address, port) {
-  if (config.newMsg == "") {
+  if (chatbotLogic.credentials.newMsg == "") {
     return;
   } else {
     client.say(
@@ -59,16 +45,6 @@ client.on("connected", function(address, port) {
     );
   }
 });
-
-function meme() {
-  console.log("meme");
-  io.emit("spinWheel", {
-    segments: [
-      { fillStyle: "#ee1c24", text: "proto" },
-      { fillStyle: "#3cb878", text: "yamii" }
-    ]
-  });
-}
 
 client.on("chat", (channel, userstate, message, self) => {
   if (self || chatbotLogic.settings.bots.includes(userstate["username"]))
@@ -99,21 +75,20 @@ client.on("chat", (channel, userstate, message, self) => {
   // console.log(userstate.badges.hasOwnProperty("vip"));
   //sounds fire
   let args = messageArray.slice(1);
-  // if (settings.sounds.includes(cmd)) {
-  //   if (sfx.canFireSfx(userstate)) {
-  //     soundname = cmd.substr(1);
-  //     functions.playSound(soundname, settings.audioVolume);
-  //   }
-  // }
+  if (chatbotLogic.settings.sounds.includes(cmd)) {
+    if (sfx.canFireSfx(userstate)) {
+      soundname = cmd.substr(1);
+      functions.playSound(soundname, settings.audioVolume);
+    }
+  }
 
   //no msg-id when normal msg
   //msg-id: "highlighted-message"
   //msg-id: "skip-subs-mode-message"
-  if (cmd == "!dud") {
-    meme();
-  }
+  // if (cmd == "!dud") {
+  //   meme();
+  // }
   if (chatbotLogic.settings.ttsLangs[lang] !== undefined) {
-    console.log(tts.ttsPlaying);
     if (tts.canFireTTS(userstate)) {
       if (!chatbotLogic.settings.ignoredtts.includes(userstate["username"])) {
         let msg = args.toString();
@@ -135,6 +110,28 @@ client.on("chat", (channel, userstate, message, self) => {
     }
   }
   switch (cmd) {
+    case "!join":
+      wheel.joinEvent(userstate["username"]);
+      break;
+    case "!debug":
+      wheel.debugWheel();
+      break;
+    case "!open":
+      if (
+        userstate["mod"] ||
+        userstate["username"] == chatbotLogic.credentials.channelName
+      ) {
+        wheel.openEvent();
+      }
+      break;
+    case "!open":
+      if (
+        userstate["mod"] ||
+        userstate["username"] == chatbotLogic.credentials.channelName
+      ) {
+        wheel.closeEvent();
+      }
+      break;
     case "!langs":
       let languages = Object.keys(chatbotLogic.settings.ttsLangs);
       let langlist = Object.keys(languages).join(", ");

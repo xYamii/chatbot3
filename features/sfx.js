@@ -23,7 +23,7 @@ module.exports = {
         $soundTable.html(" ");
         let soundsData = " ";
         for (let key in soundArray) {
-          soundsData += ` <tr><td>${parseInt(key) + 1}</td><td>${
+          soundsData += ` <tr><td>${parseInt(key) + 1} </td><td>${
             soundArray[key]
           }</td></tr>`;
         }

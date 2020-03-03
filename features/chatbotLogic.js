@@ -18,7 +18,6 @@ const chatbotOptions = {
   },
   channels: [config.credentials.channelName]
 };
-console.log("logic" + __dirname);
 let credentials = {
   botUsername: config.credentials.botUsername,
   channelName: config.credentials.channelName,
