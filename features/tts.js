@@ -2,8 +2,13 @@ const fs = require("fs");
 const googleTTS = require("google-tts-api");
 const $ = require("jquery");
 const commandsFile = require("../data/commands.json");
+const chatbotLogic = require("./chatbotLogic.js");
 let $ttsVolume = $("#ttsVolume");
 
+const path = require("path");
+let folderPath = path.join(__dirname, "../");
+
+$ttsVolume.val(chatbotLogic.settings.ttsVolume);
 let ttsPlaying = false;
 let ttsSettings = {
   ttsSubOnly: false,
@@ -110,13 +115,13 @@ module.exports = {
   },
 
   updateTTSVolume() {
-    ttsSettings.ttsVolume = $ttsVolume.val();
-    fs.readFile(__dirname + "../data/config.json", (err, data) => {
+    chatbotLogic.settings.ttsVolume = $ttsVolume.val();
+    fs.readFile(folderPath + "./data/config.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
       obj["volumes"]["ttsVolume"] = $ttsVolume.val();
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "../data/config.json", json, added);
+      fs.writeFile(folderPath + "./data/config.json", json, added);
       function added(err) {
         //if (err) //logToConsole("error", err);
         // logToConsole("info", "TTS sound updated to: " + $ttsVolume.val());

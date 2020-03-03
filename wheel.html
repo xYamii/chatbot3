@@ -12,12 +12,12 @@
             <canvas id="canvas" width="434" height="434">
                         <p>Sorry, your browser doesn't support canvas. Please try another.</p>
                             </canvas>
-        <script>
+        <script type="module">
             $("#wheel").hide();
-            //let wheel = require("./features/wheel.js");
+
             let theWheel;
+            var socket = io();
         $(function() {
-        var socket = io();
         socket.on("spinWheel", function(data) {
           console.log(data);
           createWheel(data);
@@ -115,7 +115,7 @@
                 theWheel.rotationAngle = 0;     // Re-set the wheel angle to 0 degrees.
                 theWheel.draw();                // Call draw to render changes to the wheel.
                 wheelSpinning = false;  
-                delete theWheel;        // Reset to false to power buttons and spin can be clicked again.
+                theWheel = null;        // Reset to false to power buttons and spin can be clicked again.
             }
 
             // -------------------------------------------------------
@@ -125,11 +125,11 @@
             {
                 // Just alert to the user what happened.
                 // In a real project probably want to do something more interesting than this with the result.
-                //wheel.displayWinner(indicatedSegment.text)
-                    alert("You have won " + indicatedSegment.text);
+               socket.emit("winner",indicatedSegment.text);
             }
 
             
         </script>
+
     </body>
 </html>

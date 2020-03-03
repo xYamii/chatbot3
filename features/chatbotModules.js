@@ -6,7 +6,7 @@ let $console = $("#console");
 module.exports = {
   playSound: (s, audioVolume) => {
     var audio = new Audio(soundPath + `/sounds/${s}.wav`);
-    audio.volume = parseInt(audioVolume);
+    audio.volume = audioVolume;
     audio.play();
     delete audio;
   },

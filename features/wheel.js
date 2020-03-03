@@ -13,6 +13,11 @@ exApp.use("/static", express.static("static"));
 exApp.get("/wheel", function(req, res) {
   res.sendFile(filePath + "/wheel.html");
 });
+io.on("connection", function(socket) {
+  socket.on("winner", function(winner) {
+    console.log(winner);
+  });
+});
 let wheelSettings = {
   isOpened: false,
   segments: []
@@ -44,7 +49,7 @@ module.exports = {
     }
   },
   fireEvent() {
-    io.emit("spinWheel", segments);
+    io.emit("spinWheel", module.exports.wheelSettings);
   },
   joinEvent(username) {
     if (
@@ -58,9 +63,6 @@ module.exports = {
       });
       console.log(module.exports.wheelSettings.segments);
     }
-  },
-  displayWinner(winner) {
-    console.log(winner);
   },
   debugWheel() {
     io.emit("spinWheel", debugSegments);

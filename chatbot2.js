@@ -78,7 +78,7 @@ client.on("chat", (channel, userstate, message, self) => {
   if (chatbotLogic.settings.sounds.includes(cmd)) {
     if (sfx.canFireSfx(userstate)) {
       soundname = cmd.substr(1);
-      functions.playSound(soundname, settings.audioVolume);
+      functions.playSound(soundname, chatbotLogic.settings.audioVolume);
     }
   }
 
@@ -113,9 +113,9 @@ client.on("chat", (channel, userstate, message, self) => {
     case "!join":
       wheel.joinEvent(userstate["username"]);
       break;
-    case "!debug":
-      wheel.debugWheel();
-      break;
+    // case "!debug":
+    //   wheel.debugWheel();
+    //   break;
     case "!open":
       if (
         userstate["mod"] ||
@@ -124,7 +124,7 @@ client.on("chat", (channel, userstate, message, self) => {
         wheel.openEvent();
       }
       break;
-    case "!open":
+    case "!close":
       if (
         userstate["mod"] ||
         userstate["username"] == chatbotLogic.credentials.channelName

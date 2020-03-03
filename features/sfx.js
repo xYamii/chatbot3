@@ -10,6 +10,7 @@ let sfxSettings = {
   sfxIncludeVips: false
 };
 let soundPath = path.join(__dirname, "../");
+$soundVolume.val(chatbotLogic.settings.audioVolume);
 module.exports = {
   _loadSounds() {
     fs.readdir(soundPath + "./sounds", function(err, items) {
@@ -60,13 +61,13 @@ module.exports = {
     }
   },
   updateSoundVolume() {
-    settings.audioVolume = $soundVolume.val();
-    fs.readFile(__dirname + "../data/config.json", (err, data) => {
+    chatbotLogic.settings.audioVolume = $soundVolume.val();
+    fs.readFile(soundPath + "./data/config.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
       obj["volumes"]["audioVolume"] = $soundVolume.val();
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "../data/config.json", json, added);
+      fs.writeFile(soundPath + "./data/config.json", json, added);
       function added(err) {
         // if (err) logToConsole("error", err);
         // logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
