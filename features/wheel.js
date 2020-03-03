@@ -52,16 +52,22 @@ module.exports = {
     io.emit("spinWheel", module.exports.wheelSettings);
   },
   joinEvent(username) {
-    if (
-      module.exports.wheelSettings.isOpened &&
-      !module.exports.wheelSettings.segments.some(item => item.a === username)
-    ) {
-      let color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-      module.exports.wheelSettings.segments.push({
-        fillStyle: color,
-        text: username
-      });
-      console.log(module.exports.wheelSettings.segments);
+    if (module.exports.wheelSettings.isOpened) {
+      if (
+        module.exports.wheelSettings.segments.some(
+          item => item.text === username
+        )
+      ) {
+        console.log(module.exports.wheelSettings.segments);
+        return;
+      } else {
+        let color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+        module.exports.wheelSettings.segments.push({
+          fillStyle: color,
+          text: username
+        });
+        console.log(module.exports.wheelSettings.segments);
+      }
     }
   },
   debugWheel() {
