@@ -14,17 +14,9 @@
   "author": "Yamowan",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
     "google-tts-api": "0.0.4",
     "jquery": "^3.4.1",
     "path": "^0.12.7",
-=======
-    "express": "^4.17.1",
-    "google-tts-api": "0.0.4",
-    "jquery": "^3.4.1",
-    "path": "^0.12.7",
-    "socket.io": "^2.3.0",
->>>>>>> rewrite
     "tmi.js": "^1.4.5"
   },
   "devDependencies": {

@@ -2,7 +2,6 @@ dist
 node_modules
 z
 z.js
-<<<<<<< HEAD
 z.txt
 index_2.html
 style.css
@@ -11,7 +10,3 @@ sounds
 delete.js
 chatbotconfig.js
 Chatbot-win32-x64
-=======
-Chatbot-win32-x64
-sounds/*
->>>>>>> rewrite
