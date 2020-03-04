@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .section {
   position: absolute;
   visibility: hidden;
@@ -72,3 +73,79 @@ ul {
   height: 250px;
   padding: 2px;
 }
+=======
+.section {
+    position: absolute;
+    visibility: hidden;
+    overflow: hidden;
+    padding: 10px;
+  }
+  .active {
+    visibility: visible;
+  }
+  body {
+    font-family: "Open Sans", sans-serif;
+    line-height: 1.75em;
+    font-size: 16px;
+    background-color: #222;
+    color: #aaa;
+  }
+  .navbar {
+    float: left;
+    outline: 2px solid silver;
+    width: 200px;
+    text-align: center;
+    height: auto;
+  }
+  .sections {
+    position: relative;
+    width: 500px;
+    height: 300px;
+    float: left;
+    padding: 1%;
+  }
+  .nav-header {
+    padding: 5px;
+  }
+  
+  input[type="number"] {
+    width: 50%;
+  }
+  #console {
+    outline: 1px rgb(107, 107, 107) solid;
+    width: 500px;
+    height: 300px;
+    padding: 5px;
+    font-size: small;
+    color: green;
+    font-family: Tahoma, Geneva, sans-serif;
+    overflow: auto;
+  }
+  .error {
+    color: red;
+  }
+  .info {
+    color: rgb(0, 255, 255);
+  }
+  ul {
+    list-style-type: none;
+  }
+  .left {
+    float: left;
+    margin-right: 20px;
+  }
+  #bannedPhrase {
+    clear: both;
+    margin-top: 100px;
+  }
+  #phraseList {
+    overflow-y: auto;
+    height: 250px;
+    padding: 2px;
+  }
+  #soundtable {
+    overflow-y: auto;
+    height: 250px;
+    padding: 2px;
+  }
+>>>>>>> rewrite
