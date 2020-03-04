@@ -1,3 +1,4 @@
+const chabotModules = require("./chatbotModules.js");
 const express = require("express");
 var exApp = require("express")();
 var http = require("http").Server(exApp);
@@ -15,6 +16,7 @@ exApp.get("/wheel", function(req, res) {
 });
 io.on("connection", function(socket) {
   socket.on("winner", function(winner) {
+    chabotModules.logToConsole("info", "Winner is: " + winner);
     console.log(winner);
   });
 });
