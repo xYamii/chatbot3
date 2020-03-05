@@ -10,6 +10,9 @@ let sfxSettings = {
   sfxIncludeVips: false
 };
 let soundPath = path.join(__dirname, "../");
+fs.readdir(soundPath + "./static", function(err, items) {
+  console.log(items);
+});
 $soundVolume.val(chatbotLogic.settings.audioVolume);
 module.exports = {
   _loadSounds() {

@@ -11,12 +11,12 @@ module.exports = {
     delete audio;
   },
   addLang: (lang, code) => {
-    fs.readFile(__dirname + "../data/commands.json", (err, data) => {
+    fs.readFile(soundPath + "./data/commands.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
       obj["ttsLangs"][lang] = code;
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "../data/commands.json", json, added);
+      fs.writeFile(soundPath + "./data/commands.json", json, added);
       function added(err) {
         if (err) console.log(err);
         console.log("updated succesfuly");
@@ -24,12 +24,12 @@ module.exports = {
     });
   },
   ignoreN: guy => {
-    fs.readFile(__dirname + "../data/commands.json", (err, data) => {
+    fs.readFile(soundPath + "./data/commands.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
       obj["ignoredPpl"].push(guy);
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "../data/commands.json", json, added);
+      fs.writeFile(soundPath + "./data/commands.json", json, added);
       function added(err) {
         if (err) console.log(err);
         console.log("updated succesfuly");
@@ -37,13 +37,13 @@ module.exports = {
     });
   },
   unignore: guy => {
-    fs.readFile(__dirname + "../data/commands.json", (err, data) => {
+    fs.readFile(soundPath + "./data/commands.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
       let index = obj["ignoredPpl"].indexOf(guy);
       obj["ignoredPpl"].splice(index, 1);
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(__dirname + "../data/commands.json", json, added);
+      fs.writeFile(soundPath + "./data/commands.json", json, added);
       function added(err) {
         if (err) console.log(err);
         console.log("updated succesfuly");

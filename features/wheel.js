@@ -9,9 +9,10 @@ let filePath = path.join(__dirname, "../");
 http.listen(port, function() {
   console.log("listening on *:" + port);
 });
-exApp.use("/static", express.static("static"));
+exApp.use("/static", express.static(filePath + "static"));
 
 exApp.get("/wheel", function(req, res) {
+  console.log(res);
   res.sendFile(filePath + "/wheel.html");
 });
 io.on("connection", function(socket) {
