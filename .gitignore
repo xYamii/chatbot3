@@ -2,11 +2,5 @@ dist
 node_modules
 z
 z.js
-z.txt
-index_2.html
-style.css
-test.js
-sounds
-delete.js
-chatbotconfig.js
 Chatbot-win32-x64
+sounds/*

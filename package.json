@@ -14,14 +14,21 @@
   "author": "Yamowan",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.1",
     "google-tts-api": "0.0.4",
     "jquery": "^3.4.1",
     "path": "^0.12.7",
-    "tmi.js": "^1.4.5"
+    "socket.io": "^2.3.0",
+    "tmi.js": "^1.5.0"
   },
   "devDependencies": {
-    "asar": "^2.0.1",
-    "electron": "^5.0.9",
-    "electron-packager": "^14.0.4"
+    "asar": "^2.1.0",
+    "electron": "^5.0.13",
+    "electron-packager": "^14.2.1"
+  },
+  "build": {
+    "static": [
+      "./static/**"
+    ]
   }
 }

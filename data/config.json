@@ -1,0 +1,12 @@
+{
+  "credentials": {
+    "botUsername": "",
+    "channelName": "",
+    "botOauth": "",
+    "newMsg": ""
+  },
+  "volumes": {
+    "audioVolume": "1",
+    "ttsVolume": "1"
+  }
+}
