@@ -44,7 +44,7 @@ module.exports = {
     if (msg.length < 200 && msg.length > 1) {
       if (
         ttsSettings.bannedPhrases.length > 0 &&
-        ttsSettings.bannedPhrases.some(v => msg.match(new RegExp("\\b"+v+"\\b", "gmi")))
+        ttsSettings.bannedPhrases.some(v => msg.match(new RegExp("\\b" + v + "\\b", "gmi")))
       ) {
         return false;
       } else {
