@@ -32,6 +32,7 @@ let settings = {
   commands: commandsFile.botCommands,
   bannedPhrases: commandsFile.bannedPhrases,
   bots: ["qdth", "moobot", "nightbot", "eddwardg"],
+  sounds: [],
   ttsLangs: commandsFile.ttsLangs
 };
 let $phraseList = $("#phraseList");

@@ -177,7 +177,7 @@ client.on("chat", (channel, userstate, message, self) => {
           client.say(chatbotLogic.credentials.channelName, soundList);
           soundList = " ";
         } else {
-          soundList = soundList + " " + settings.sounds[i];
+          soundList = soundList + " " + chatbotLogic.settings.sounds[i];
         }
       }
       client.say(chatbotLogic.credentials.channelName, soundList);
