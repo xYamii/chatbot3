@@ -137,7 +137,7 @@ client.on("chat", (channel, userstate, message, self) => {
       break;
     case "!langs":
       let languages = Object.keys(chatbotLogic.settings.ttsLangs);
-      let langlist = Object.keys(languages).join(", ");
+      let langlist = languages.join(", ");
       client.say(chatbotLogic.credentials.channelName, langlist);
       break;
     case "!ignore":
@@ -177,7 +177,7 @@ client.on("chat", (channel, userstate, message, self) => {
           client.say(chatbotLogic.credentials.channelName, soundList);
           soundList = " ";
         } else {
-          soundList = soundList + " " + settings.sounds[i];
+          soundList = soundList + " " + chatbotLogic.settings.sounds[i];
         }
       }
       client.say(chatbotLogic.credentials.channelName, soundList);
