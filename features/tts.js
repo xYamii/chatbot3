@@ -13,6 +13,7 @@ let ttsPlaying = false;
 let ttsSettings = {
   ttsSubOnly: false,
   ttsIncludeVips: false,
+  ttsIncludeMods: false,
   bannedPhrases: commandsFile.bannedPhrases
 };
 
@@ -20,12 +21,18 @@ let ttsQueue = [];
 $("#ttsSubOnly").on("change", function() {
   if (this.checked) {
     $("#ttsIncludeVips").prop("disabled", false);
+    $("#ttsIncludeMods").prop("disabled", false);
     ttsSettings.ttsSubOnly = true;
   } else {
     $("#ttsIncludeVips")
       .prop("disabled", true)
       .prop("checked", false);
+    $("#ttsIncludeMods")
+      .prop("disabled", true)
+      .prop("checked", false);
+    ttsSettings.ttsIncludeMods = false;
     ttsSettings.ttsSubOnly = false;
+    ttsSettings.ttsIncludeVips = false;
   }
 });
 $("#ttsIncludeVips").on("change", function() {
@@ -35,8 +42,14 @@ $("#ttsIncludeVips").on("change", function() {
     ttsSettings.ttsIncludeVips = false;
   }
 });
+$("#ttsIncludeMods").on("change", function() {
+  if (this.checked) {
+    ttsSettings.ttsIncludeMods = true;
+  } else {
+    ttsSettings.ttsIncludeMods = false;
+  }
+});
 
-console.log(__dirname);
 module.exports = {
   ttsPlaying,
   ttsQueue,
@@ -44,7 +57,9 @@ module.exports = {
     if (msg.length < 200 && msg.length > 1) {
       if (
         ttsSettings.bannedPhrases.length > 0 &&
-        ttsSettings.bannedPhrases.some(v => msg.match(new RegExp("\\b" + v + "\\b", "gmi")))
+        ttsSettings.bannedPhrases.some(v =>
+          msg.match(new RegExp("\\b" + v + "\\b", "gmi"))
+        )
       ) {
         return false;
       } else {
@@ -95,13 +110,17 @@ module.exports = {
     if (!userData.badges == "") {
       if (userData.badges.vip == 1) {
         userBadge.vip = true;
-      } else if (userData.subscriber) {
+      } else if (userData.subscriber || userData.badges.founder == 9) {
         userBadge.sub = true;
       }
     }
     if (ttsSettings.ttsSubOnly) {
       if (ttsSettings.ttsIncludeVips) {
         if (userBadge.vip || userBadge.sub) {
+          return true;
+        }
+      } else if (ttsSettings.ttsIncludeMods) {
+        if (userBadge.vip || userBadge.mod) {
           return true;
         }
       } else {

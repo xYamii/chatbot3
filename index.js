@@ -1,6 +1,13 @@
 const electron = require("electron");
 const { app, BrowserWindow } = electron;
-
+const fs = require("fs");
+fs.readdir("./sounds", function(err, items) {
+  if (err != null) {
+    fs.mkdir("./sounds", function() {
+      console.log("added");
+    });
+  }
+});
 let win = null;
 
 app.on("ready", () => {

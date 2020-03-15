@@ -7,12 +7,11 @@ let $soundVolume = $("#soundVolume");
 let $soundTable = $("#soundtable");
 let sfxSettings = {
   sfxSubOnly: false,
-  sfxIncludeVips: false
+  sfxIncludeVips: false,
+  sfxIncludeMods: false
 };
 let soundPath = path.join(__dirname, "../");
-fs.readdir(soundPath + "./static", function(err, items) {
-  console.log(items);
-});
+
 $soundVolume.val(chatbotLogic.settings.audioVolume);
 module.exports = {
   _loadSounds() {
@@ -40,18 +39,25 @@ module.exports = {
   canFireSfx(userData) {
     let userBadge = {
       vip: false,
-      sub: false
+      sub: false,
+      mod: false
     };
     if (!userData.badges == "") {
       if (userData.badges.vip == 1) {
         userBadge.vip = true;
-      } else if (userData.subscriber) {
+      } else if (userData.subscriber || userData.badges.founder == 9) {
         userBadge.sub = true;
+      } else if (userData.mod) {
+        userBadge.mod = true;
       }
     }
     if (sfxSettings.sfxSubOnly) {
       if (sfxSettings.sfxIncludeVips) {
         if (userBadge.vip || userBadge.sub) {
+          return true;
+        }
+      } else if (sfxSettings.sfxIncludeMods) {
+        if (userBadge.vip || userBadge.mod) {
           return true;
         }
       } else {
@@ -86,7 +92,12 @@ $("#sfxSubOnly").on("change", function() {
     $("#sfxIncludeVips")
       .prop("disabled", true)
       .prop("checked", false);
+    $("#sfxIncludeMods")
+      .prop("disabled", true)
+      .prop("checked", false);
     sfxSettings.sfxSubOnly = false;
+    sfxSettings.sfxIncludeVips = false;
+    sfxSettings.sfxIncludeMods = false;
   }
 });
 $("#sfxIncludeVips").on("change", function() {
@@ -94,5 +105,12 @@ $("#sfxIncludeVips").on("change", function() {
     sfxSettings.sfxIncludeVips = true;
   } else {
     sfxSettings.sfxIncludeVips = false;
+  }
+});
+$("#sfxIncludeMods").on("change", function() {
+  if (this.checked) {
+    sfxSettings.sfxIncludeMods = true;
+  } else {
+    sfxSettings.sfxIncludeMods = false;
   }
 });
