@@ -10,7 +10,7 @@ const tts = require("./features/tts.js");
 const sfx = require("./features/sfx.js");
 const chatbotLogic = require("./features/chatbotLogic.js");
 
-const client = new tmi.client(chatbotLogic.chatbotOptions);
+let client = new tmi.client(chatbotLogic.chatbotOptions);
 // update module reference
 const chatbot = (function() {
   let $botStatus = $("#bot-status");
@@ -18,6 +18,7 @@ const chatbot = (function() {
   let $statusOFF = $("#status-off");
   $statusON.click(_startBot);
   $statusOFF.click(_stopBot);
+  $statusOFF.prop("disabled", true);
   //functions
   function _startBot() {
     client.connect();
@@ -120,9 +121,9 @@ client.on("chat", (channel, userstate, message, self) => {
     case "!join":
       wheel.joinEvent(userstate["username"]);
       break;
-    // case "!debug":
-    //   wheel.debugWheel();
-    //   break;
+    case "!debug":
+      wheel.debugWheel();
+      break;
     case "!open":
       if (
         userstate["mod"] ||
