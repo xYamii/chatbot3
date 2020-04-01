@@ -22,14 +22,18 @@ const chatbot = (function() {
   function _startBot() {
     client.connect();
     $botStatus.html("online");
-    $statusON.addClass("disabled");
-    $statusOFF.removeClass("disabled");
+    $statusON.prop("disabled", true);
+    setTimeout(() => {
+      $statusOFF.prop("disabled", false);
+    }, 2000);
   }
   function _stopBot() {
     client.disconnect();
     $botStatus.html("offline");
-    $statusOFF.addClass("disabled");
-    $statusON.removeClass("disabled");
+    $statusOFF.prop("disabled", true);
+    setTimeout(() => {
+      $statusON.prop("disabled", false);
+    }, 2000);
   }
 })();
 
@@ -187,8 +191,11 @@ client.on("chat", (channel, userstate, message, self) => {
         userstate["mod"] ||
         userstate["username"] == chatbotLogic.credentials.channelName
       ) {
-        if (ttsLangs[args[0]] == undefined && args.length == 2) {
-          ttsLangs[args[0]] = args[1];
+        if (
+          chatbotLogic.settings.ttsLangs[args[0]] == undefined &&
+          args.length == 2
+        ) {
+          chatbotLogic.settings.ttsLangs[args[0]] = args[1];
           functions.addLang(args[0], args[1]);
         }
       }

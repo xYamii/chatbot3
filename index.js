@@ -4,7 +4,7 @@ const fs = require("fs");
 fs.readdir("./sounds", function(err, items) {
   if (err != null) {
     fs.mkdir("./sounds", function() {
-      console.log("added");
+      console.log("added sounds folder");
     });
   }
 });
