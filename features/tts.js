@@ -77,7 +77,7 @@ module.exports = {
     googleTTS(msg, lang, 1)
       .then(function(url) {
         $("#audio1")
-          .prop("volume", ttsSettings.ttsVolume)
+          .prop("volume", chatbotLogic.settings.ttsVolume)
           .attr("src", url)
           .get(0)
           .play();
@@ -142,8 +142,9 @@ module.exports = {
       let json = JSON.stringify(obj, null, 2);
       fs.writeFile(folderPath + "./data/config.json", json, added);
       function added(err) {
-        //if (err) //logToConsole("error", err);
-        // logToConsole("info", "TTS sound updated to: " + $ttsVolume.val());
+        if (err)
+          //logToConsole("error", err);
+          logToConsole("info", "TTS sound updated to: " + $ttsVolume.val());
       }
     });
   }
