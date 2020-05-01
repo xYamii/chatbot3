@@ -23,7 +23,7 @@ module.exports = {
       }
     });
   },
-  ignoreN: guy => {
+  ignoreN: (guy) => {
     fs.readFile(soundPath + "./data/commands.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
@@ -36,7 +36,7 @@ module.exports = {
       }
     });
   },
-  unignore: guy => {
+  unignore: (guy) => {
     fs.readFile(soundPath + "./data/commands.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
@@ -52,5 +52,5 @@ module.exports = {
   },
   logToConsole: (msgType, logMsg) => {
     $console.append(`<p class="${msgType}">${logMsg}<p>`);
-  }
+  },
 };

@@ -1,9 +1,11 @@
 const electron = require("electron");
 const { app, BrowserWindow } = electron;
 const fs = require("fs");
-fs.readdir("./sounds", function(err, items) {
+const path = require("path");
+let soundPath = path.join(__dirname, "/sounds");
+fs.readdir(soundPath, function (err, items) {
   if (err != null) {
-    fs.mkdir("./sounds", function() {
+    fs.mkdir(soundPath, function () {
       console.log("added sounds folder");
     });
   }
@@ -15,8 +17,8 @@ app.on("ready", () => {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
   win.loadFile("index.html");
 });

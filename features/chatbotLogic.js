@@ -6,23 +6,24 @@ const $ = require("jquery");
 const path = require("path");
 const chatbotOptions = {
   options: {
-    debug: true
+    debug: true,
   },
   connection: {
     cluster: "aws",
-    reconnect: true
+    reconnect: true,
   },
   identity: {
     username: config.credentials.botUsername,
-    password: config.credentials.botOauth
+    password: config.credentials.botOauth,
   },
-  channels: [config.credentials.channelName]
+  channels: [config.credentials.channelName],
+  newMsg: config.credentials.newMsg,
 };
 let credentials = {
   botUsername: config.credentials.botUsername,
   channelName: config.credentials.channelName,
   botOauth: config.credentials.botOauth,
-  newMsg: config.credentials.newMsg
+  newMsg: config.credentials.newMsg,
 };
 
 let settings = {
@@ -33,7 +34,7 @@ let settings = {
   bannedPhrases: commandsFile.bannedPhrases,
   bots: ["qdth", "moobot", "nightbot", "eddwardg"],
   sounds: [],
-  ttsLangs: commandsFile.ttsLangs
+  ttsLangs: commandsFile.ttsLangs,
 };
 let $phraseList = $("#phraseList");
 let $ignoredList = $("#ignoredList");
@@ -54,16 +55,18 @@ module.exports = {
       botUsername: $("#botUsername").val(),
       channelName: $("#channelName").val(),
       botOauth: $("#botOauth").val(),
-      newMsg: $("#newMsg").val()
+      newMsg: $("#newMsg").val(),
     };
 
     if (botUsername == "" || channelName == "" || botOauth == "") {
       chatbotModules.logToConsole("error", "You need to fill all data");
     } else {
-      chatbotOptions.identity.username = newData.botUsername;
-      chatbotOptions.identity.password = newData.botOauth;
-      chatbotOptions.channels[0] = newData.channelName;
-      fs.readFile(folderPath + "./data/config.json", function(err, data) {
+      console.log(module.exports.chatbotOptions);
+      module.exports.chatbotOptions.identity.username = newData.botUsername;
+      module.exports.chatbotOptions.identity.password = newData.botOauth;
+      module.exports.chatbotOptions.channels[0] = newData.channelName;
+      module.exports.chatbotOptions.newMsg = newData.newMsg;
+      fs.readFile(folderPath + "./data/config.json", function (err, data) {
         if (err) {
           console.log(err);
         }
@@ -96,12 +99,10 @@ module.exports = {
   },
   bindDeletePhrases() {
     let ppl = document.getElementsByClassName("del1");
-    Array.from(ppl).forEach(item => {
-      item.addEventListener("click", e => {
+    Array.from(ppl).forEach((item) => {
+      item.addEventListener("click", (e) => {
         let $remove = $(e.target).closest("li");
-        let phraseToRemove = $("#phraseList")
-          .find("li")
-          .index($remove);
+        let phraseToRemove = $("#phraseList").find("li").index($remove);
         $remove.remove();
         settings.bannedPhrases.splice(phraseToRemove, 1);
         module.exports.remFromFile("bannedPhrases", phraseToRemove);
@@ -117,12 +118,8 @@ module.exports = {
     module.exports.bindDeletePhrases();
   },
   addPhrase(e) {
-    let phrase = $(e.target)
-      .prev("input")
-      .val();
-    $(e.target)
-      .prev("input")
-      .val("");
+    let phrase = $(e.target).prev("input").val();
+    $(e.target).prev("input").val("");
     if (!settings.bannedPhrases.includes(phrase)) {
       settings.bannedPhrases.push(phrase);
       fs.readFile(folderPath + "./data/commands.json", (err, data) => {
@@ -141,12 +138,10 @@ module.exports = {
   },
   bindDeleteGuy() {
     let ppl = document.getElementsByClassName("del");
-    Array.from(ppl).forEach(item => {
-      item.addEventListener("click", e => {
+    Array.from(ppl).forEach((item) => {
+      item.addEventListener("click", (e) => {
         let $remove = $(e.target).closest("li");
-        let guyToRemove = $("#ignoredList")
-          .find("li")
-          .index($remove);
+        let guyToRemove = $("#ignoredList").find("li").index($remove);
         $remove.remove();
         settings.ignoredtts.splice(guyToRemove, 1);
         module.exports.remFromFile("ignoredPpl", guyToRemove);
@@ -162,12 +157,9 @@ module.exports = {
     module.exports.bindDeleteGuy();
   },
   addGuy(e) {
-    let guy = $(e.target)
-      .prev("input")
-      .val();
-    $(e.target)
-      .prev("input")
-      .val("");
+    let guy = $(e.target).prev("input").val();
+    guy = guy.toLowerCase();
+    $(e.target).prev("input").val("");
     if (!settings.ignoredtts.includes(guy)) {
       settings.ignoredtts.push(guy);
       fs.readFile(folderPath + "./data/commands.json", (err, data) => {
@@ -183,5 +175,5 @@ module.exports = {
       });
       module.exports.displayIgnored();
     } else return;
-  }
+  },
 };

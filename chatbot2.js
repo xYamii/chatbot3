@@ -12,7 +12,7 @@ const chatbotLogic = require("./features/chatbotLogic.js");
 
 let client = new tmi.client(chatbotLogic.chatbotOptions);
 // update module reference
-const chatbot = (function() {
+const chatbot = (function () {
   let $botStatus = $("#bot-status");
   let $statusON = $("#status-on");
   let $statusOFF = $("#status-off");
@@ -43,13 +43,14 @@ chatbotLogic.displayIgnored();
 chatbotLogic.displayPhrases();
 sfx._loadSounds();
 
-client.on("connected", function(address, port) {
-  if (chatbotLogic.credentials.newMsg == "") {
+client.on("connected", function (address, port) {
+  console.log(chatbotLogic.chatbotOptions);
+  if (chatbotLogic.chatbotOptions.newMsg == "") {
     return;
   } else {
     client.say(
-      chatbotLogic.credentials.channelName,
-      `${chatbotLogic.credentials.newMsg}`
+      chatbotLogic.chatbotOptions.channels[0],
+      `${chatbotLogic.chatbotOptions.newMsg}`
     );
   }
 });
@@ -93,12 +94,19 @@ client.on("chat", (channel, userstate, message, self) => {
   //no msg-id when normal msg
   //msg-id: "highlighted-message"
   //msg-id: "skip-subs-mode-message"
-  // if (cmd == "!dud") {
-  //   meme();
-  // }
+  if (cmd == "!test") {
+    console.log(chatbotLogic.settings.ignoredtts);
+    console.log(
+      chatbotLogic.settings.ignoredtts.includes(userstate["username"])
+    );
+  }
   if (chatbotLogic.settings.ttsLangs[lang] !== undefined) {
     if (tts.canFireTTS(userstate)) {
-      if (!chatbotLogic.settings.ignoredtts.includes(userstate["username"])) {
+      if (
+        !chatbotLogic.settings.ignoredtts.includes(
+          userstate["username"].toLowerCase
+        )
+      ) {
         let msg = args.toString();
         msg = msg.split(",").join(" ");
         if (tts.filterTTS(msg)) {
@@ -146,18 +154,20 @@ client.on("chat", (channel, userstate, message, self) => {
       client.say(chatbotLogic.credentials.channelName, langlist);
       break;
     case "!ignore":
+      let ignoreGuy = args[0].toLowerCase();
+      console.log(ignoreGuy);
       if (
         userstate["mod"] ||
         userstate["username"] == chatbotLogic.credentials.channelName
       ) {
         if (
-          args == chatbotLogic.credentials.channelName ||
-          chatbotLogic.settings.ignoredtts.includes(args[0])
+          ignoreGuy == chatbotLogic.credentials.channelName.toLowerCase() ||
+          chatbotLogic.settings.ignoredtts.includes(ignoreGuy)
         ) {
           functions.logToConsole("error", "already in array / its stremer");
         } else {
-          chatbotLogic.settings.ignoredtts.push(args[0]);
-          functions.ignoreN(args[0]);
+          chatbotLogic.settings.ignoredtts.push(ignoreGuy);
+          functions.ignoreN(ignoreGuy);
           chatbotLogic.displayIgnored();
         }
       }
@@ -167,10 +177,10 @@ client.on("chat", (channel, userstate, message, self) => {
         userstate["mod"] ||
         userstate["username"] == chatbotLogic.credentials.channelName
       ) {
-        if (chatbotLogic.settings.ignoredtts.includes(args[0])) {
-          let index = chatbotLogic.settings.ignoredtts.indexOf(args[0]);
+        if (chatbotLogic.settings.ignoredtts.includes(ignoreGuy)) {
+          let index = chatbotLogic.settings.ignoredtts.indexOf(ignoreGuy);
           chatbotLogic.settings.ignoredtts.splice(index, 1);
-          functions.unignore(args[0]);
+          functions.unignore(ignoreGuy);
           chatbotLogic.displayIgnored();
         }
       }
@@ -196,6 +206,7 @@ client.on("chat", (channel, userstate, message, self) => {
           chatbotLogic.settings.ttsLangs[args[0]] == undefined &&
           args.length == 2
         ) {
+          console.log("adding lang");
           chatbotLogic.settings.ttsLangs[args[0]] = args[1];
           functions.addLang(args[0], args[1]);
         }
