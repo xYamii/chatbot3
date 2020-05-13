@@ -8,19 +8,19 @@ let $soundTable = $("#soundtable");
 let sfxSettings = {
   sfxSubOnly: false,
   sfxIncludeVips: false,
-  sfxIncludeMods: false
+  sfxIncludeMods: false,
 };
 let soundPath = path.join(__dirname, "../");
 
 $soundVolume.val(chatbotLogic.settings.audioVolume);
 module.exports = {
   _loadSounds() {
-    fs.readdir(soundPath + "./sounds", function(err, items) {
+    fs.readdir(soundPath + "./sounds", function (err, items) {
       if (items !== undefined) {
         let soundArray = [];
         for (var i = 0; i < items.length; i++) {
           let z = items[i].slice(0, -4);
-          soundArray.push("!" + z);
+          soundArray.push("!" + z.toLowerCase());
         }
         chatbotLogic.settings.sounds = soundArray;
         $soundTable.html(" ");
@@ -40,7 +40,7 @@ module.exports = {
     let userBadge = {
       vip: false,
       sub: false,
-      mod: false
+      mod: false,
     };
     if (!userData.badges == "") {
       if (userData.badges.vip == 1) {
@@ -82,32 +82,28 @@ module.exports = {
         // logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
       }
     });
-  }
+  },
 };
-$("#sfxSubOnly").on("change", function() {
+$("#sfxSubOnly").on("change", function () {
   if (this.checked) {
     $("#sfxIncludeVips").prop("disabled", false);
     sfxSettings.sfxSubOnly = true;
   } else {
-    $("#sfxIncludeVips")
-      .prop("disabled", true)
-      .prop("checked", false);
-    $("#sfxIncludeMods")
-      .prop("disabled", true)
-      .prop("checked", false);
+    $("#sfxIncludeVips").prop("disabled", true).prop("checked", false);
+    $("#sfxIncludeMods").prop("disabled", true).prop("checked", false);
     sfxSettings.sfxSubOnly = false;
     sfxSettings.sfxIncludeVips = false;
     sfxSettings.sfxIncludeMods = false;
   }
 });
-$("#sfxIncludeVips").on("change", function() {
+$("#sfxIncludeVips").on("change", function () {
   if (this.checked) {
     sfxSettings.sfxIncludeVips = true;
   } else {
     sfxSettings.sfxIncludeVips = false;
   }
 });
-$("#sfxIncludeMods").on("change", function() {
+$("#sfxIncludeMods").on("change", function () {
   if (this.checked) {
     sfxSettings.sfxIncludeMods = true;
   } else {
