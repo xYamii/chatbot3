@@ -94,17 +94,12 @@ client.on("chat", (channel, userstate, message, self) => {
   //no msg-id when normal msg
   //msg-id: "highlighted-message"
   //msg-id: "skip-subs-mode-message"
-  if (cmd == "!test") {
-    console.log(chatbotLogic.settings.ignoredtts);
-    console.log(
-      chatbotLogic.settings.ignoredtts.includes(userstate["username"])
-    );
-  }
+
   if (chatbotLogic.settings.ttsLangs[lang] !== undefined) {
     if (tts.canFireTTS(userstate)) {
       if (
         !chatbotLogic.settings.ignoredtts.includes(
-          userstate["username"].toLowerCase
+          userstate["username"].toLowerCase()
         )
       ) {
         let msg = args.toString();
@@ -125,6 +120,7 @@ client.on("chat", (channel, userstate, message, self) => {
       } else return;
     }
   }
+  let ignoreGuy = args[0].toLowerCase();
   switch (cmd) {
     case "!join":
       wheel.joinEvent(userstate["username"]);
@@ -154,16 +150,12 @@ client.on("chat", (channel, userstate, message, self) => {
       client.say(chatbotLogic.credentials.channelName, langlist);
       break;
     case "!ignore":
-      let ignoreGuy = args[0].toLowerCase();
       console.log(ignoreGuy);
       if (
         userstate["mod"] ||
         userstate["username"] == chatbotLogic.credentials.channelName
       ) {
-        if (
-          ignoreGuy == chatbotLogic.credentials.channelName.toLowerCase() ||
-          chatbotLogic.settings.ignoredtts.includes(ignoreGuy)
-        ) {
+        if (chatbotLogic.settings.ignoredtts.includes(ignoreGuy)) {
           functions.logToConsole("error", "already in array / its stremer");
         } else {
           chatbotLogic.settings.ignoredtts.push(ignoreGuy);
