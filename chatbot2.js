@@ -120,7 +120,10 @@ client.on("chat", (channel, userstate, message, self) => {
       } else return;
     }
   }
-  let ignoreGuy = args[0].toLowerCase();
+  let ignoreGuy;
+  if (args[0] != undefined) {
+    ignoreGuy = args[0].toLowerCase();
+  }
   switch (cmd) {
     case "!join":
       wheel.joinEvent(userstate["username"]);
