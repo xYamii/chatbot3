@@ -181,13 +181,13 @@ client.on("chat", (channel, userstate, message, self) => {
       }
       break;
     case "!sounds":
-      let soundList = " ";
+      let soundList = "";
       for (var i = 0; i < chatbotLogic.settings.sounds.length; i++) {
         if (soundList.length < 350) {
-          soundList = soundList + " " + chatbotLogic.settings.sounds[i];
+          soundList += " " + chatbotLogic.settings.sounds[i];
         } else {
           client.say(chatbotLogic.credentials.channelName, soundList);
-          soundList = " ";
+          soundList = chatbotLogic.settings.sounds[i];
         }
       }
       client.say(chatbotLogic.credentials.channelName, soundList);
