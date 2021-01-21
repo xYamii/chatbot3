@@ -18,7 +18,7 @@
     "google-tts-api": "0.0.4",
     "jquery": "^3.4.1",
     "path": "^0.12.7",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "tmi.js": "^1.5.0"
   },
   "devDependencies": {
