@@ -1,112 +1,127 @@
 const fs = require("fs");
-const $ = require("jquery");
 const path = require("path");
-const chatbotLogic = require("./chatbotLogic.js");
-
-let $soundVolume = $("#soundVolume");
-let $soundTable = $("#soundtable");
-let sfxSettings = {
-  sfxSubOnly: false,
-  sfxIncludeVips: false,
-  sfxIncludeMods: false,
+const $ = require("jquery");
+const { consolelog } = require("./log");
+const soundPath = path.join(__dirname, "../");
+const { sounds, sfxVolume } = require(soundPath + "/data/sounds.json");
+const sfxSettings = {
+  permissions: {
+    limited: false,
+    subs: false,
+    mods: false,
+    vips: false,
+  },
+  status: true, // its off
+  sfxVolume,
 };
-let soundPath = path.join(__dirname, "../");
-
-$soundVolume.val(chatbotLogic.settings.audioVolume);
 module.exports = {
-  _loadSounds() {
-    fs.readdir(soundPath + "./sounds", function (err, items) {
-      if (items !== undefined) {
-        let soundArray = [];
-        for (var i = 0; i < items.length; i++) {
-          let z = items[i].slice(0, -4);
-          soundArray.push("!" + z.toLowerCase());
-        }
-        chatbotLogic.settings.sounds = soundArray;
-        $soundTable.html(" ");
-        let soundsData = " ";
-        for (let key in soundArray) {
-          soundsData += ` <tr><td>${parseInt(key) + 1} </td><td>${
-            soundArray[key]
-          }</td></tr>`;
-        }
-        $soundTable.html(soundsData);
-      } else {
-        $soundTable.html("there are no sounds added to bot xd");
-      }
-    });
+  sounds,
+  sfxSettings,
+  playSound: (s) => {
+    var audio = new Audio(soundPath + `/sounds/${s}.wav`);
+    audio.volume = sfxSettings.sfxVolume;
+    audio.play();
+    delete audio;
+  },
+  addSound: (name) => {
+    sounds.push(name);
+    //updateBin(binID, sounds);
+    module.exports.displaySounds();
+  },
+  removeSound: (name) => {
+    sounds.splice(sounds.indexOf(name), 1);
+    //updateBin(binID, sounds);
+    module.exports.displaySounds();
   },
   canFireSfx(userData) {
     let userBadge = {
       vip: false,
       sub: false,
       mod: false,
+      broadcaster: false,
     };
-    if (!userData.badges == "") {
+    if (userData.badges !== null) {
       if (userData.badges.vip == 1) {
         userBadge.vip = true;
-      } else if (userData.subscriber || userData.badges.founder == 9) {
+      }
+      if (userData.subscriber || "founder" in userData.badges) {
         userBadge.sub = true;
-      } else if (userData.mod) {
+      }
+      if (userData.mod) {
         userBadge.mod = true;
       }
-    }
-    if (sfxSettings.sfxSubOnly) {
-      if (sfxSettings.sfxIncludeVips) {
-        if (userBadge.vip || userBadge.sub) {
-          return true;
-        }
-      } else if (sfxSettings.sfxIncludeMods) {
-        if (userBadge.vip || userBadge.mod) {
-          return true;
-        }
-      } else {
-        if (userBadge.sub) {
-          return true;
-        } else return false;
+      if ("broadcaster" in userData.badges) {
+        userBadge.broadcaster = true;
       }
+    }
+    if (!sfxSettings.status) {
+      return false;
     } else {
-      return true;
+      if (
+        sfxSettings.permissions.vips ||
+        sfxSettings.permissions.mods ||
+        sfxSettings.permissions.subs
+      ) {
+        console.log(userBadge.broadcaster);
+        if (userBadge.broadcaster) {
+          return true;
+        }
+        if (sfxSettings.permissions.subs) {
+          if (userBadge.sub) {
+            return true;
+          }
+        }
+        if (sfxSettings.permissions.mods) {
+          if (userBadge.mod) {
+            return true;
+          }
+        }
+        if (sfxSettings.permissions.vips) {
+          if (userBadge.vip) {
+            return true;
+          }
+        } else return false;
+      } else {
+        return true;
+      }
     }
   },
-  updateSoundVolume() {
-    chatbotLogic.settings.audioVolume = $soundVolume.val();
-    fs.readFile(soundPath + "./data/config.json", (err, data) => {
+  updateSFXVolume(newVolume) {
+    fs.readFile(soundPath + "data/sounds.json", (err, data) => {
       if (err) console.log(err);
       let obj = JSON.parse(data);
-      obj["volumes"]["audioVolume"] = $soundVolume.val();
+      obj["sfxVolume"] = newVolume;
+      module.exports.sfxSettings.sfxVolume = newVolume;
       let json = JSON.stringify(obj, null, 2);
-      fs.writeFile(soundPath + "./data/config.json", json, added);
-      function added(err) {
-        // if (err) logToConsole("error", err);
-        // logToConsole("info", "Sfx sound updated to: " + $soundVolume.val());
-      }
+      fs.writeFile(soundPath + "data/sounds.json", json, (err) => {
+        if (err) console.log(err);
+      });
     });
   },
+  displaySounds() {
+    let soundsData = `<table><thead><tr><th class="w-60">Index</th><th>Sound name</th></tr></thead><tbody>`;
+    for (let key in sounds) {
+      soundsData += ` <tr><td class="w-60">${parseInt(key) + 1}</td><td>${
+        sounds[key]
+      }</td></tr>`;
+    }
+    soundsData += `</tbody></table>`;
+    $("#soundtable").html(soundsData);
+  },
 };
-$("#sfxSubOnly").on("change", function () {
-  if (this.checked) {
-    $("#sfxIncludeVips").prop("disabled", false);
-    sfxSettings.sfxSubOnly = true;
-  } else {
-    $("#sfxIncludeVips").prop("disabled", true).prop("checked", false);
-    $("#sfxIncludeMods").prop("disabled", true).prop("checked", false);
-    sfxSettings.sfxSubOnly = false;
-    sfxSettings.sfxIncludeVips = false;
-    sfxSettings.sfxIncludeMods = false;
-  }
+$("#sfxSubs").on("change", () => {
+  sfxSettings.permissions.subs = !sfxSettings.permissions.subs;
+  console.log(sfxSettings.permissions);
 });
-$("#sfxIncludeVips").on("change", function () {
-  if (this.checked) {
-    sfxSettings.sfxIncludeVips = true;
-  } else {
-    sfxSettings.sfxIncludeVips = false;
-  }
+$("#sfxVips").on("change", () => {
+  sfxSettings.permissions.vips = !sfxSettings.permissions.vips;
+  console.log(sfxSettings.permissions);
 });
-$("#sfxIncludeMods").on("change", function () {
-  if (this.checked) {
-    sfxSettings.sfxIncludeMods = true;
-  } else {
-    sfxSettings.sfxIncludeMods = false;
-  }
+$("#sfxMods").on("change", () => {
+  sfxSettings.permissions.mods = !sfxSettings.permissions.mods;
+  console.log(sfxSettings.permissions);
+});
+$("#sfxBtn").on("click", () => {
+  sfxSettings.status = !sfxSettings.status;
+  sfxSettings.status ? $("#sfxStatus").html("ON") : $("#sfxStatus").html("OFF");
 });
