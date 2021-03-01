@@ -2,3 +2,4 @@ dist
 node_modules
 Chatbot-win32-x64
 sounds/*
+.env
