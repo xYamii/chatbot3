@@ -10,7 +10,7 @@ const {
   { bannedPhrases } = require("../data/tts.json"),
   { ignoredUsers } = require("../data/ignored.json"),
   { moveQueue, ttsSettings, updateTTSVolume } = require("./tts.js"),
-  { binID, updateBin } = require("./displaySounds.js");
+  { getBID, updateBin } = require("./displaySounds.js");
 const $ignoredList = $("#ignoredList"),
   $phraseList = $("#phraseList"),
   $syncSounds = $("#syncSounds"),
@@ -33,6 +33,7 @@ window.addEventListener("load", () => {
   displaySounds();
 });
 $("#syncSounds").on("click", (e) => {
+  let binID = getBID();
   updateBin(binID, sounds);
   $("#syncSounds").prop("disabled", true);
   consolelog("info", "Synced sounds");
@@ -50,4 +51,6 @@ $updateSoundVolume.on("click", () => {
 $soundVolume.val(parseFloat(sfxSettings.sfxVolume));
 $ttsVolume.val(parseFloat(ttsSettings.ttsVolume));
 
-$("#audio1").on("ended", moveQueue());
+$("#audio1").on("ended", () => {
+  moveQueue();
+});

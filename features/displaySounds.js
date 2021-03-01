@@ -44,6 +44,10 @@ const createBin = (data) => {
     });
 };
 
+const getBID = () => {
+  return binID;
+};
+
 const writeToFile = (id) => {
   soundData.binID = id;
   let json = JSON.stringify(soundData, null, 2);
@@ -53,7 +57,7 @@ const writeToFile = (id) => {
 };
 
 module.exports = {
-  binID,
+  getBID,
   createBin,
   updateBin,
 };

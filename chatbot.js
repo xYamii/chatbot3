@@ -4,8 +4,7 @@ const path = require("path");
 require("dotenv").config({
   path: path.join(__dirname, ".env"),
 });
-const { binID } = require("./features/displaySounds.js");
-const { ignoredUsers } = require("./data/ignored.json");
+const { getBID } = require("./features/displaySounds.js");
 const {
   sounds,
   playSound,
@@ -13,7 +12,7 @@ const {
   addSound,
   removeSound,
 } = require("./features/sfx.js");
-
+const { isIgnored, ignore, unignore } = require("./features/ignore.js");
 const tts = require("./features/tts.js");
 const { consolelog } = require("./features/log.js");
 const botOptions = {
@@ -64,7 +63,6 @@ bot.on("disconnected", (reason) => {
 });
 
 bot.on("chat", (channel, userstate, message, self) => {
-  console.log(binID);
   if (self) return;
   let messageArray = message.split(" ");
   const cmd = messageArray.shift().toLowerCase();
@@ -76,6 +74,7 @@ bot.on("chat", (channel, userstate, message, self) => {
     return;
   }
   if (cmd == "!sounds") {
+    let binID = getBID();
     bot.say(
       process.env.CHANNEL,
       `you can find sounds here (temp location)\n https://jsonbin.io/${binID}`
@@ -84,13 +83,16 @@ bot.on("chat", (channel, userstate, message, self) => {
   }
   if (cmd[0] == "!") {
     if (sounds.includes(cmd.substr(1))) {
-      if (canFireSfx(userstate)) {
+      if (
+        !isIgnored(userstate["username"].toLowerCase()) &&
+        canFireSfx(userstate)
+      ) {
         playSound(cmd.substr(1));
       }
     }
     if (tts.langs[cmd.substr(1)] !== undefined) {
       if (
-        !ignoredUsers.includes(userstate["username"].toLowerCase()) &&
+        !isIgnored(userstate["username"].toLowerCase()) &&
         tts.canFireTTS(userstate)
       ) {
         let ttsMsg = messageArray.toString().split(",").join(" ");
@@ -108,6 +110,20 @@ bot.on("chat", (channel, userstate, message, self) => {
         } else return;
       } else return;
     }
+  }
+  if (cmd == "!ignore") {
+    let ignoredUser = messageArray[0].toLowerCase();
+    if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+      ignore(ignoredUser);
+  }
+  if (cmd == "!unignore") {
+    let ignoredUser = messageArray[0].toLowerCase();
+    if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+      unignore(ignoredUser);
+  }
+  if (cmd == "!skiptts") {
+    if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+      tts.moveQueue();
   }
 });
 
