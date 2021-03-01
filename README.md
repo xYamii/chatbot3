@@ -12,11 +12,11 @@ builds the app
 
 ### AUTH
 
-(Head here and generate auth for bot account) [https://twitchapps.com/tmi/]
+[Head here and generate auth for bot account](https://twitchapps.com/tmi/)
 
 ### JSON API
 
-(Create account and api key) [https://jsonbin.io/]
+[Create account and api key](https://jsonbin.io/)
 
 ### .env file
 
