@@ -15,6 +15,7 @@ const {
 const { isIgnored, ignore, unignore } = require("./features/ignore.js");
 const tts = require("./features/tts.js");
 const { consolelog } = require("./features/log.js");
+const wheel = require("./features/wheel.js");
 const botOptions = {
   options: { debug: true, messagesLogLevel: "info" },
   connection: {
@@ -124,6 +125,28 @@ bot.on("chat", (channel, userstate, message, self) => {
   if (cmd == "!skiptts") {
     if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
       tts.moveQueue();
+  }
+  switch (cmd) {
+    case "!join":
+      wheel.joinEvent(userstate["username"]);
+      break;
+    case "!debug":
+      wheel.debugWheel();
+      break;
+    case "!open":
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL) {
+        wheel.openEvent();
+      }
+      break;
+    case "!close":
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL) {
+        wheel.closeEvent();
+      }
+      break;
+    default:
+      if (wheel.wheelSettings.isOpened) {
+        wheel.joinEvent(userstate["username"]);
+      }
   }
 });
 
