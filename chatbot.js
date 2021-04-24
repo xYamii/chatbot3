@@ -74,6 +74,21 @@ bot.on("chat", (channel, userstate, message, self) => {
     );
     return;
   }
+  if (!isIgnored(userstate["username"].toLowerCase())) {
+    var usersname = userstate["username"].toLowerCase();
+    var usernameSet = new Set(usersname)
+    usernameSet = new Map([... usernameSet].map(x => [x, Array.from(usersname).filter(y => y === x).length]))
+    for (let char of Array.from(new Map([...usernameSet].sort((a, b) => b[1]-a[1])).keys())) {
+      if ((usersname.replace(new RegExp("[^"+char+"]", "g"),'').length / usersname.length) > 0.80) {
+        bot.ban(
+          process.env.CHANNEL,
+          usersname,
+          "Get a better username"
+        );
+        break;
+      }
+    }
+  }
   if (cmd == "!sounds") {
     let binID = getBID();
     bot.say(
