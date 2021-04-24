@@ -95,14 +95,8 @@
                 // Play the sound.
                 audio.play();
             }
-
-            // Vars used by the code in this page to do power controls.
             let wheelPower    = Math.floor(Math.random() * Math.floor(3));
             let wheelSpinning = false;
-
-            // -------------------------------------------------------
-            // Click handler for spin button.
-            // -------------------------------------------------------
             function startSpin()
             {
                 // Ensure that spinning can't be clicked again while already running.
@@ -126,10 +120,6 @@
                     wheelSpinning = true;
                 }
             }
-
-            // -------------------------------------------------------
-            // Function for reset button.
-            // -------------------------------------------------------
             function resetWheel()
             {
                 theWheel.stopAnimation(false);  // Stop the animation, false as param so does not call callback function.
@@ -138,14 +128,8 @@
                 wheelSpinning = false;  
                 theWheel = null;        // Reset to false to power buttons and spin can be clicked again.
             }
-
-            // -------------------------------------------------------
-            // Called when the spin animation has finished by the callback feature of the wheel because I specified callback in the parameters.
-            // -------------------------------------------------------
             function alertPrize(indicatedSegment)
             {
-                // Just alert to the user what happened.
-                // In a real project probably want to do something more interesting than this with the result.
                socket.emit("winner",indicatedSegment.text);
             }
 

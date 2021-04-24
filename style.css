@@ -1,0 +1,96 @@
+body {
+  font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  background-color: #222;
+  color: white;
+}
+html {
+  font-family: sans-serif;
+}
+.section {
+  visibility: hidden;
+  overflow: hidden;
+  padding: 10px;
+  position: absolute;
+  width: 90%;
+}
+.atv {
+  visibility: visible;
+}
+.sections {
+  width: 100%;
+  height: 500px;
+  float: left;
+  padding: 2%;
+}
+#console {
+  outline: 1px rgb(107, 107, 107) solid;
+  width: 500px;
+  height: 300px;
+  padding: 5px;
+  font-size: small;
+  overflow: auto;
+}
+#status {
+  float: left;
+  width: 200px;
+}
+.section-item {
+  float: left;
+  width: 320px;
+}
+.section-item input[type="number"] {
+  width: 30%;
+}
+.section-item input[type="text"] {
+  width: 90%;
+}
+#phraseList {
+  overflow-y: auto;
+  height: 250px;
+  padding: 2px;
+  float: left;
+  width: 100%;
+}
+#phraseVal,
+#guyVal,
+#addPhrase #addGuy {
+  float: left;
+}
+.w-40 {
+  width: 40%;
+}
+#guyVal {
+  width: 80%;
+}
+input[type="checkbox"] {
+  text-align: right;
+}
+.perm-item {
+  text-align: justify;
+}
+#ignoredList {
+  padding: 0;
+}
+.warning {
+  color: green;
+}
+.error {
+  color: red;
+}
+.info {
+  color: rgb(0, 255, 255);
+}
+#soundtable {
+  overflow-y: auto;
+  height: 250px;
+  padding: 2px;
+}
+.w-60 {
+  width: 60px;
+}
+td {
+  width: 200px;
+  word-break: break-all;
+}

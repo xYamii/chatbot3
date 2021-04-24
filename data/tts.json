@@ -1,6 +1,5 @@
 {
-  "botCommands": {},
-  "ttsLangs": {
+  "langs": {
     "dk": "da-DK",
     "nl": "nl-NL",
     "au": "en-AU",
@@ -25,6 +24,6 @@
     "af": "af-ZA",
     "ar": "es-ar"
   },
-  "ignoredPpl": [],
+  "ttsVolume": "0.92",
   "bannedPhrases": []
 }
