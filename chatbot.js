@@ -13,6 +13,7 @@ const {
   removeSound,
 } = require("./features/sfx.js");
 const { isIgnored, ignore, unignore } = require("./features/ignore.js");
+const { isPermitted, permit, unpermit } = require("./features/permit.js");
 const tts = require("./features/tts.js");
 const { consolelog } = require("./features/log.js");
 const wheel = require("./features/wheel.js");
@@ -67,21 +68,23 @@ bot.on("chat", (channel, userstate, message, self) => {
   if (self) return;
   let messageArray = message.split(" ");
   const cmd = messageArray.shift().toLowerCase();
-  if (cmd == "!sirifoundbug") {
-    bot.say(
-      process.env.CHANNEL,
-      "report bug here: https://forms.gle/HjriLpS1Quiqoz8Y7"
-    );
-    return;
+  // Ban suspicious usernames
+  if (!isPermitted(userstate["username"].toLowerCase())) {
+    var usersname = userstate["username"].toLowerCase();
+    var usernameSet = new Set(usersname)
+    usernameSet = new Map([... usernameSet].map(x => [x, Array.from(usersname).filter(y => y === x).length]))
+    for (let char of Array.from(new Map([...usernameSet].sort((a, b) => b[1]-a[1])).keys())) {
+      if ((usersname.replace(new RegExp("[^"+char+"]", "g"),'').length / usersname.length) > 0.60) {
+        bot.ban(
+          process.env.CHANNEL,
+          userstate["username"],
+          "Get a better username"
+        );
+        break;
+      }
+    }
   }
-  if (cmd == "!sounds") {
-    let binID = getBID();
-    bot.say(
-      process.env.CHANNEL,
-      `you can find sounds here (temp location)\n https://jsonbin.io/${binID}`
-    );
-    return;
-  }
+  // Sounds
   if (cmd[0] == "!") {
     if (sounds.includes(cmd.substr(1))) {
       if (
@@ -112,21 +115,46 @@ bot.on("chat", (channel, userstate, message, self) => {
       } else return;
     }
   }
-  if (cmd == "!ignore") {
-    let ignoredUser = messageArray[0].toLowerCase();
-    if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
-      ignore(ignoredUser);
-  }
-  if (cmd == "!unignore") {
-    let ignoredUser = messageArray[0].toLowerCase();
-    if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
-      unignore(ignoredUser);
-  }
-  if (cmd == "!skiptts") {
-    if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
-      tts.moveQueue();
-  }
+
+  // Commands
   switch (cmd) {
+    case "!sirifoundbug":
+      bot.say(
+        process.env.CHANNEL,
+        "report bug here: https://forms.gle/HjriLpS1Quiqoz8Y7"
+      );
+      return;
+    case "!sounds":
+      let binID = getBID();
+      bot.say(
+        process.env.CHANNEL,
+        `you can find sounds here (temp location)\n https://jsonbin.io/${binID}`
+      );
+      return;
+    case "!permit":
+      let permittedUser = messageArray[0].toLowerCase();
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+        permit(permittedUser);
+    break;
+    case "!unpermit":
+      let permittedUser = messageArray[0].toLowerCase();
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+        unpermit(permittedUser);
+      break;
+    case "!ignore":
+      let ignoredUser = messageArray[0].toLowerCase();
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+        ignore(ignoredUser);
+      break;
+    case "!unignore":
+      let ignoredUser = messageArray[0].toLowerCase();
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+        unignore(ignoredUser);
+      break;
+    case "!skiptts":
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
+        tts.moveQueue();
+      break;
     case "!join":
       wheel.joinEvent(userstate["username"]);
       break;
@@ -134,19 +162,16 @@ bot.on("chat", (channel, userstate, message, self) => {
       wheel.debugWheel();
       break;
     case "!open":
-      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL) {
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
         wheel.openEvent();
-      }
       break;
     case "!close":
-      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL) {
+      if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
         wheel.closeEvent();
-      }
       break;
     default:
-      if (wheel.wheelSettings.isOpened) {
+      if (wheel.wheelSettings.isOpened) 
         wheel.joinEvent(userstate["username"]);
-      }
   }
 });
 
