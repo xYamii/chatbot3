@@ -74,7 +74,7 @@ bot.on("chat", (channel, userstate, message, self) => {
     var usernameSet = new Set(usersname)
     usernameSet = new Map([... usernameSet].map(x => [x, Array.from(usersname).filter(y => y === x).length]))
     for (let char of Array.from(new Map([...usernameSet].sort((a, b) => b[1]-a[1])).keys())) {
-      if ((usersname.replace(new RegExp("[^"+char+"]", "g"),'').length / usersname.length) > 0.80) {
+      if ((usersname.replace(new RegExp("[^"+char+"]", "g"),'').length / usersname.length) > 0.60) {
         bot.ban(
           process.env.CHANNEL,
           userstate["username"],
