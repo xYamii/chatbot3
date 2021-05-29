@@ -65,16 +65,29 @@ bot.on("disconnected", (reason) => {
 });
 
 bot.on("chat", (channel, userstate, message, self) => {
+  let permitedUser;
+  let ignoredUser;
   if (self) return;
   let messageArray = message.split(" ");
   const cmd = messageArray.shift().toLowerCase();
   // Ban suspicious usernames
   if (!isPermitted(userstate["username"].toLowerCase())) {
     var usersname = userstate["username"].toLowerCase();
-    var usernameSet = new Set(usersname)
-    usernameSet = new Map([... usernameSet].map(x => [x, Array.from(usersname).filter(y => y === x).length]))
-    for (let char of Array.from(new Map([...usernameSet].sort((a, b) => b[1]-a[1])).keys())) {
-      if ((usersname.replace(new RegExp("[^"+char+"]", "g"),'').length / usersname.length) > 0.60) {
+    var usernameSet = new Set(usersname);
+    usernameSet = new Map(
+      [...usernameSet].map((x) => [
+        x,
+        Array.from(usersname).filter((y) => y === x).length,
+      ])
+    );
+    for (let char of Array.from(
+      new Map([...usernameSet].sort((a, b) => b[1] - a[1])).keys()
+    )) {
+      if (
+        usersname.replace(new RegExp("[^" + char + "]", "g"), "").length /
+          usersname.length >
+        0.6
+      ) {
         bot.ban(
           process.env.CHANNEL,
           userstate["username"],
@@ -132,22 +145,22 @@ bot.on("chat", (channel, userstate, message, self) => {
       );
       return;
     case "!permit":
-      let permittedUser = messageArray[0].toLowerCase();
+      permittedUser = messageArray[0].toLowerCase();
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
         permit(permittedUser);
-    break;
+      break;
     case "!unpermit":
-      let permittedUser = messageArray[0].toLowerCase();
+      permittedUser = messageArray[0].toLowerCase();
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
         unpermit(permittedUser);
       break;
     case "!ignore":
-      let ignoredUser = messageArray[0].toLowerCase();
+      ignoredUser = messageArray[0].toLowerCase();
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
         ignore(ignoredUser);
       break;
     case "!unignore":
-      let ignoredUser = messageArray[0].toLowerCase();
+      ignoredUser = messageArray[0].toLowerCase();
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
         unignore(ignoredUser);
       break;
@@ -170,8 +183,7 @@ bot.on("chat", (channel, userstate, message, self) => {
         wheel.closeEvent();
       break;
     default:
-      if (wheel.wheelSettings.isOpened) 
-        wheel.joinEvent(userstate["username"]);
+      if (wheel.wheelSettings.isOpened) wheel.joinEvent(userstate["username"]);
   }
 });
 
