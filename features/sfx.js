@@ -1,7 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const $ = require("jquery");
-const { consolelog } = require("./log");
 const soundPath = path.join(__dirname, "../");
 const { sounds, sfxVolume } = require(soundPath + "/data/sounds.json");
 const sfxSettings = {
@@ -22,16 +20,6 @@ module.exports = {
     audio.volume = sfxSettings.sfxVolume;
     audio.play();
     delete audio;
-  },
-  addSound: (name) => {
-    sounds.push(name);
-    //updateBin(binID, sounds);
-    module.exports.displaySounds();
-  },
-  removeSound: (name) => {
-    sounds.splice(sounds.indexOf(name), 1);
-    //updateBin(binID, sounds);
-    module.exports.displaySounds();
   },
   canFireSfx(userData) {
     let userBadge = {
@@ -97,16 +85,6 @@ module.exports = {
         if (err) console.log(err);
       });
     });
-  },
-  displaySounds() {
-    let soundsData = `<table><thead><tr><th class="w-60">Index</th><th>Sound name</th></tr></thead><tbody>`;
-    for (let key in sounds) {
-      soundsData += ` <tr><td class="w-60">${parseInt(key) + 1}</td><td>${
-        sounds[key]
-      }</td></tr>`;
-    }
-    soundsData += `</tbody></table>`;
-    $("#soundtable").html(soundsData);
   },
 };
 $("#sfxSubs").on("change", () => {

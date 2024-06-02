@@ -9,15 +9,6 @@
       href="node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
     <link rel="stylesheet" href="style.css" />
-    <script>
-      let $ = require("jquery");
-    </script>
-    <script>
-      require("popper.js");
-    </script>
-    <script>
-      require("bootstrap");
-    </script>
     <script src="node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
   </head>
   <body>
@@ -101,9 +92,6 @@
             <button id="syncSounds" class="btn btn-primary clearfix">
               Sync
             </button>
-            <p class="text-warning">
-              pls dont spam this, api cant handle that many requests :(
-            </p>
           </div>
           <div class="section-item">
             <h3>Sounds loaded to bot:</h3>
@@ -189,12 +177,6 @@
       </div>
     </div>
     <audio src="" class="speech" id="audio1" hidden></audio>
-    <script>
-      require("./chatbot.js");
-      require("./features/log.js");
-      require("./features/tts.js");
-      require("./features/domEvents.js");
-      require("./features/displaySounds.js");
-    </script>
   </body>
+  <script src="./renderer.js"></script>
 </html>
