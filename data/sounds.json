@@ -1,4 +1,5 @@
 {
   "sounds": [],
-  "sfxVolume": "0.1"
+  "sfxVolume": "0.1",
+  "keyBinds": []
 }

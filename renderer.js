@@ -12,12 +12,23 @@ const displaySounds = async () => {
 
 const displayIgnoredUsers = async () => {
   const ignoredUsers = await window.api.getIgnoredUsers();
-  if (ignoredUsers.length < 1) return;
-  let ignoredUsersList;
+  if (ignoredUsers.length < 1) {
+    document.getElementById("ignoredList").innerHTML =
+      "<h4> none is ignored noway </h4>";
+    return;
+  }
+  let ignoredUsersList = "<h4> Ignored users: </h4>";
   for (let key in ignoredUsers) {
-    ignoredUsersList += `<li>${ignoredUsers[key]}</li>`;
+    ignoredUsersList += `<li onclick=window.api.unignoreUser("${ignoredUsers[key]}")>${ignoredUsers[key]}</li>`;
   }
   document.getElementById("ignoredList").innerHTML = ignoredUsersList;
+};
+
+const playSound = async (sound) => {
+  var audio = new Audio(`./sounds/${sound}.wav`);
+  audio.volume = 0.5;
+  audio.play();
+  delete audio;
 };
 
 displaySounds();
@@ -34,11 +45,15 @@ document.getElementById("addGuy").addEventListener("click", () => {
   displayIgnoredUsers();
 });
 
-window.api.onReceiveMessage((event, message) => {
+window.api.onReceiveMessage((event, message, ...args) => {
   switch (message) {
     case "renderSounds":
       displaySounds();
       break;
+    case "renderIgnored":
+      displayIgnoredUsers();
+    case "playSound":
+      playSound(...args);
     default:
       break;
   }

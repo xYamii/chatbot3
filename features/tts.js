@@ -42,6 +42,7 @@ module.exports = {
       slow: false,
       host: "https://translate.google.com",
     });
+    console.log(url);
     try {
       $("#audio1")
         .prop("volume", ttsSettings.ttsVolume)
@@ -135,6 +136,9 @@ module.exports = {
       });
     });
   },
+  removeURLFromMessage(msg) {
+    return msg.replace(/(?:https?|ftp|http):\/\/[\n\S]+/g, "LINK REMOVED");
+  }
 };
 
 $("#ttsSubOnly").on("change", () => {

@@ -3,12 +3,17 @@ const { app, BrowserWindow, ipcMain } = electron;
 const chokidar = require("chokidar");
 const path = require("path");
 const soundPath = path.join(__dirname, "/sounds");
+const { GlobalKeyboardListener } = require("node-global-key-listener");
+const v = new GlobalKeyboardListener();
+
 const {
   loadSoundsFromDirectory,
   createSoundDirectory,
   getSounds,
   addSound,
   removeSound,
+  getSoundKeyBindings,
+  playSound,
 } = require("./utils.js/soundsUtils");
 const {
   getIgnoredUsers,
@@ -20,6 +25,8 @@ createSoundDirectory();
 loadSoundsFromDirectory();
 
 let mainWindow = null;
+const cooldowns = {};
+const COOLDOWN_TIME = 2000;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -40,8 +47,25 @@ app.whenReady().then(() => {
   ipcMain.handle("getSounds", () => getSounds());
   ipcMain.handle("getIgnoredUsers", () => getIgnoredUsers());
   ipcMain.handle("ignoreUser", (event, userName) => ignoreUser(userName));
-  ipcMain.handle("unignoreUser", (event, userName) => unignoreUser(userName));
+  ipcMain.handle("unignoreUser", (event, userName) => {
+    unignoreUser(userName);
+    mainWindow.webContents.send("fromMain", "renderIgnored");
+  });
   createWindow();
+  v.addListener(function (e, down) {
+    let key = e.vKey;
+    const currentTime = Date.now();
+    if (cooldowns[key] && currentTime - cooldowns[key] < COOLDOWN_TIME) {
+      return;
+    }
+    cooldowns[key] = currentTime;
+    let keyBindings = getSoundKeyBindings();
+    keyBindings.forEach((keyBinding) => {
+      if (keyBinding.key === key) {
+        mainWindow.webContents.send("fromMain", "playSound", keyBinding.sound);
+      }
+    });
+  });
 });
 
 app.on("window-all-closed", () => {

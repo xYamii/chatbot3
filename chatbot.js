@@ -3,7 +3,7 @@ const path = require("path");
 require("dotenv").config({
   path: path.join(__dirname, ".env"),
 });
-const { sounds, playSound, canFireSfx } = require("./features/sfx.js");
+const { playSound, canFireSfx } = require("./features/sfx.js");
 const { isPermitted, permit, unpermit } = require("./features/permit.js");
 const tts = require("./features/tts.js");
 const { consolelog } = require("./features/log.js");
@@ -13,6 +13,7 @@ const {
   ignoreUser,
   unignoreUser,
 } = require("./utils.js/ttsUtils.js");
+const { soundExist } = require("./utils.js/soundsUtils.js");
 require("./features/domEvents.js");
 const botOptions = {
   options: { debug: true, messagesLogLevel: "info" },
@@ -95,7 +96,7 @@ bot.on("chat", (channel, userstate, message, self) => {
   }
   // Sounds
   if (cmd[0] == "!") {
-    if (sounds.includes(cmd.substr(1))) {
+    if (soundExist(cmd.substr(1))) {
       if (
         !isIgnored(userstate["username"].toLowerCase()) &&
         canFireSfx(userstate)
@@ -112,13 +113,13 @@ bot.on("chat", (channel, userstate, message, self) => {
         if (tts.filterTTS(ttsMsg)) {
           if (tts.ttsQueue.length < 1) {
             if (!tts.ttsPlaying) {
-              tts.speak(tts.langs[cmd.substr(1)], ttsMsg);
+              tts.speak(tts.langs[cmd.substr(1)], tts.removeURLFromMessage(ttsMsg));
               tts.ttsPlaying == true;
             } else {
-              tts.addToQueue(tts.langs[cmd.substr(1)], ttsMsg);
+              tts.addToQueue(tts.langs[cmd.substr(1)], tts.removeURLFromMessage(ttsMsg));
             }
           } else {
-            tts.addToQueue(tts.langs[cmd.substr(1)], ttsMsg);
+            tts.addToQueue(tts.langs[cmd.substr(1)], tts.removeURLFromMessage(ttsMsg));
           }
         } else return;
       } else return;
