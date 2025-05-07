@@ -10,22 +10,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.2",
-    "bootstrap": "^4.6.0",
-    "chokidar": "^3.5.1",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "@electron/packager": "^18.3.2",
+    "@fortawesome/fontawesome-free": "6.7.1",
+    "bootstrap": "5.3.3",
+    "chokidar": "4.0.1",
+    "dotenv": "16.4.7",
+    "express": "5.0.1",
     "google-tts-api": "^2.0.1",
-    "jquery": "^3.5.1",
-    "popper.js": "^1.16.1",
-    "socket.io": "^3.1.2",
+    "jquery": "^3.7.1",
+    "node-global-key-listener": "^0.3.0",
+    "socket.io": "4.8.1",
     "tmi.js": "^1.7.1"
   },
   "devDependencies": {
-    "@types/node": "^14.14.31",
+    "@types/node": "22.10.1",
     "@types/tmi.js": "^1.7.1",
-    "electron": "^11.2.3",
-    "electron-packager": "^15.2.0"
+    "electron": "33.2.1"
   },
   "build": {
     "static": [

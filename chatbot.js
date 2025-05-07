@@ -1,22 +1,20 @@
 const tmi = require("tmi.js");
-const chokidar = require("chokidar");
 const path = require("path");
 require("dotenv").config({
   path: path.join(__dirname, ".env"),
 });
-const { getBID } = require("./features/displaySounds.js");
-const {
-  sounds,
-  playSound,
-  canFireSfx,
-  addSound,
-  removeSound,
-} = require("./features/sfx.js");
-const { isIgnored, ignore, unignore } = require("./features/ignore.js");
+const { playSound, canFireSfx } = require("./features/sfx.js");
 const { isPermitted, permit, unpermit } = require("./features/permit.js");
 const tts = require("./features/tts.js");
 const { consolelog } = require("./features/log.js");
 const wheel = require("./features/wheel.js");
+const {
+  isIgnored,
+  ignoreUser,
+  unignoreUser,
+} = require("./utils.js/ttsUtils.js");
+const { soundExist } = require("./utils.js/soundsUtils.js");
+require("./features/domEvents.js");
 const botOptions = {
   options: { debug: true, messagesLogLevel: "info" },
   connection: {
@@ -32,9 +30,9 @@ const botOptions = {
 const bot = new tmi.Client(botOptions);
 
 const chatbot = (function () {
-  let $botStatus = $("#bot-status");
-  let $statusON = $("#status-on");
-  let $statusOFF = $("#status-off");
+  let $botStatus = window.$("#bot-status");
+  let $statusON = window.$("#status-on");
+  let $statusOFF = window.$("#status-off");
   $statusON.click(_startBot);
   $statusOFF.click(_stopBot);
   $statusOFF.prop("disabled", true);
@@ -65,7 +63,6 @@ bot.on("disconnected", (reason) => {
 });
 
 bot.on("chat", (channel, userstate, message, self) => {
-  let permitedUser;
   let ignoredUser;
   if (self) return;
   let messageArray = message.split(" ");
@@ -99,7 +96,7 @@ bot.on("chat", (channel, userstate, message, self) => {
   }
   // Sounds
   if (cmd[0] == "!") {
-    if (sounds.includes(cmd.substr(1))) {
+    if (soundExist(cmd.substr(1))) {
       if (
         !isIgnored(userstate["username"].toLowerCase()) &&
         canFireSfx(userstate)
@@ -116,13 +113,13 @@ bot.on("chat", (channel, userstate, message, self) => {
         if (tts.filterTTS(ttsMsg)) {
           if (tts.ttsQueue.length < 1) {
             if (!tts.ttsPlaying) {
-              tts.speak(tts.langs[cmd.substr(1)], ttsMsg);
+              tts.speak(tts.langs[cmd.substr(1)], tts.removeURLFromMessage(ttsMsg));
               tts.ttsPlaying == true;
             } else {
-              tts.addToQueue(tts.langs[cmd.substr(1)], ttsMsg);
+              tts.addToQueue(tts.langs[cmd.substr(1)], tts.removeURLFromMessage(ttsMsg));
             }
           } else {
-            tts.addToQueue(tts.langs[cmd.substr(1)], ttsMsg);
+            tts.addToQueue(tts.langs[cmd.substr(1)], tts.removeURLFromMessage(ttsMsg));
           }
         } else return;
       } else return;
@@ -157,12 +154,12 @@ bot.on("chat", (channel, userstate, message, self) => {
     case "!ignore":
       ignoredUser = messageArray[0].toLowerCase();
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
-        ignore(ignoredUser);
+        ignoreUser(ignoredUser);
       break;
     case "!unignore":
       ignoredUser = messageArray[0].toLowerCase();
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
-        unignore(ignoredUser);
+        unignoreUser(ignoredUser);
       break;
     case "!skiptts":
       if (userstate["mod"] || userstate["username"] == process.env.CHANNEL)
@@ -186,19 +183,3 @@ bot.on("chat", (channel, userstate, message, self) => {
       if (wheel.wheelSettings.isOpened) wheel.joinEvent(userstate["username"]);
   }
 });
-
-const watcher = chokidar.watch(path.join(__dirname, "/sounds"), {
-  ignored: /(^|[\/\\])\../, // ignore dotfiles
-  persistent: true,
-});
-watcher
-  .on("add", (path) => {
-    let fileIndex = path.split("\\").indexOf("sounds");
-    if (!sounds.includes(path.split("\\")[fileIndex + 1].split(".")[0])) {
-      addSound(path.split("\\")[fileIndex + 1].split(".")[0]);
-    }
-  })
-  .on("unlink", (path) => {
-    let fileIndex = path.split("\\").indexOf("sounds");
-    removeSound(path.split("\\")[fileIndex + 1].split(".")[0]);
-  });
